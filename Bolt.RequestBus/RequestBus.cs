@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Bolt.RequestBus
 {
@@ -50,6 +52,28 @@ namespace Bolt.RequestBus
 
     public sealed class RequestBus : IRequestBus
     {
+        private readonly IServiceProvider _sp;
+        private readonly Lazy<IRequestBusContext> _context;
+
+        public RequestBus(IServiceProvider sp)
+        {
+            _sp = sp;
+            _context = new Lazy<IRequestBusContext>(() => BuildContext(_sp));
+        }
+
+        private static IRequestBusContext BuildContext(IServiceProvider sp)
+        {
+            var context = new RequestBusContext();
+            var writers = sp.GetServices<IRequestBusContextWriter>();
+
+            foreach (var writer in writers)
+            {
+                writer.Write(context);
+            }
+            
+            return context;
+        }
+        
         public IResponse Send<TRequest>(TRequest request)
         {
             throw new System.NotImplementedException();
@@ -72,7 +96,16 @@ namespace Bolt.RequestBus
 
         public void Publish<TEvent>(TEvent @event)
         {
-            throw new System.NotImplementedException();
+            var context = _context.Value;
+            
+            var handlers = _sp.GetServices<IEventHandler<TEvent>>();
+
+            foreach (var handler in handlers)
+            {
+                if(!handler.IsApplicable(context, @event)) continue;
+                
+                handler.Handle(context, @event);
+            }
         }
 
         public Task<IResponse> SendAsync<TRequest>(TRequest request)
