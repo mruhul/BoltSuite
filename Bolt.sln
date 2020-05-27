@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.RequestBus", "Bolt.RequestBus\Bolt.RequestBus.csproj", "{CAB7E2E3-4F90-4A42-9A18-8B32608EF7EF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{94F505D6-68C0-4385-94DD-9990E5AD8999}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.RequestBus.Tests", "Bolt.RequestBus.Tests\Bolt.RequestBus.Tests.csproj", "{56C54662-CDE7-47E5-97C0-2CBD623C76E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,12 @@ Global
 		{CAB7E2E3-4F90-4A42-9A18-8B32608EF7EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAB7E2E3-4F90-4A42-9A18-8B32608EF7EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAB7E2E3-4F90-4A42-9A18-8B32608EF7EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56C54662-CDE7-47E5-97C0-2CBD623C76E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56C54662-CDE7-47E5-97C0-2CBD623C76E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56C54662-CDE7-47E5-97C0-2CBD623C76E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56C54662-CDE7-47E5-97C0-2CBD623C76E1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{56C54662-CDE7-47E5-97C0-2CBD623C76E1} = {94F505D6-68C0-4385-94DD-9990E5AD8999}
 	EndGlobalSection
 EndGlobal

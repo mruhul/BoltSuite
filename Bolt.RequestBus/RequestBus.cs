@@ -47,4 +47,87 @@ namespace Bolt.RequestBus
         string Message { get; }
         string PropertyName { get; }
     }
+
+    public sealed class RequestBus : IRequestBus
+    {
+        public IResponse Send<TRequest>(TRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IResponse TrySend<TRequest>(TRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IResponse<TResult> Send<TRequest, TResult>(TRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IResponse<TResult> TrySend<TRequest, TResult>(TRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Publish<TEvent>(TEvent @event)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IResponse> SendAsync<TRequest>(TRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IResponse> TrySendAsync<TRequest>(TRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IResponse<TResult>> SendAsync<TRequest, TResult>(TRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IResponse<TResult>> TrySendAsync<TRequest, TResult>(TRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task PublishAsync<TEvent>(TEvent @event)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IResponse<TResult> Response<TResult>()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<IResponse<TResult>> Responses<TResult>()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<IResponse<TResult>> Responses<TRequest, TResult>(TRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IResponse<TResult>> ResponseAsync<TResult>()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TResult>()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TRequest, TResult>(TRequest request)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
 }
