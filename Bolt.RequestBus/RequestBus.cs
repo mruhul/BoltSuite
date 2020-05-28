@@ -77,24 +77,26 @@ namespace Bolt.RequestBus
             }
         }
 
-        public Task<IResponse> SendAsync<TRequest>(TRequest request)
+        public async Task<IResponse> SendAsync<TRequest>(TRequest request)
         {
-            throw new System.NotImplementedException();
+            return await SendAsync<TRequest, None>(request, ignoreNoHandler: false)
+                .ConfigureAwait(false);
         }
 
-        public Task<IResponse> TrySendAsync<TRequest>(TRequest request)
+        public async Task<IResponse> TrySendAsync<TRequest>(TRequest request)
         {
-            throw new System.NotImplementedException();
+            return await SendAsync<TRequest, None>(request, ignoreNoHandler: true)
+                .ConfigureAwait(false);
         }
 
         public Task<IResponse<TResult>> SendAsync<TRequest, TResult>(TRequest request)
         {
-            throw new System.NotImplementedException();
+            return SendAsync<TRequest, TResult>(request, ignoreNoHandler: false);
         }
 
         public Task<IResponse<TResult>> TrySendAsync<TRequest, TResult>(TRequest request)
         {
-            throw new System.NotImplementedException();
+            return SendAsync<TRequest, TResult>(request, ignoreNoHandler: true);
         }
 
         public async Task PublishAsync<TEvent>(TEvent @event)
@@ -175,6 +177,24 @@ namespace Bolt.RequestBus
             if (ignoreNoHandler) return Bolt.RequestBus.Response.Failed<TResult>();
             
             throw new NoRequestHandlerAvailable(typeof(IRequestHandler<TRequest,None>));
+        }
+        
+        private async Task<IResponse<TResult>> SendAsync<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
+        {
+            var context = _context.Value;
+            
+            var handlers = _sp.GetServices<IRequestHandlerAsync<TRequest, TResult>>();
+            
+            foreach (var handler in handlers)
+            {
+                if(!handler.IsApplicable(context, request)) continue;
+
+                return await handler.Handle(context, request);
+            }
+
+            if (ignoreNoHandler) return Bolt.RequestBus.Response.Failed<TResult>();
+            
+            throw new NoRequestHandlerAvailable(typeof(IRequestHandlerAsync<TRequest,None>));
         }
     }
 }
