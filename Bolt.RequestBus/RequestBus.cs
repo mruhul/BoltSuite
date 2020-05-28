@@ -32,13 +32,6 @@ namespace Bolt.RequestBus
         Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TRequest,TResult>(TRequest request);
     }
 
-    public interface IError
-    {
-        string Code { get; }
-        string Message { get; }
-        string PropertyName { get; }
-    }
-
     public sealed class RequestBus : IRequestBus
     {
         private readonly IServiceProvider _sp;
@@ -50,37 +43,6 @@ namespace Bolt.RequestBus
             _context = new Lazy<IRequestBusContext>(() => BuildContext(_sp));
         }
 
-        private static IRequestBusContext BuildContext(IServiceProvider sp)
-        {
-            var context = new RequestBusContext();
-            var writers = sp.GetServices<IRequestBusContextWriter>();
-
-            foreach (var writer in writers)
-            {
-                writer.Write(context);
-            }
-            
-            return context;
-        }
-
-        private IResponse<TResult> Send<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
-        {
-            var context = _context.Value;
-            
-            var handlers = _sp.GetServices<IRequestHandler<TRequest, TResult>>();
-            
-            foreach (var handler in handlers)
-            {
-                if(!handler.IsApplicable(context, request)) continue;
-
-                return handler.Handle(context, request);
-            }
-
-            if (ignoreNoHandler) return Bolt.RequestBus.Response.Failed<TResult>();
-            
-            throw new NoRequestHandlerAvailable(typeof(IRequestHandler<TRequest,None>));
-        }
-        
         public IResponse Send<TRequest>(TRequest request)
         {
             return Send<TRequest, None>(request, ignoreNoHandler: false);
@@ -135,9 +97,22 @@ namespace Bolt.RequestBus
             throw new System.NotImplementedException();
         }
 
-        public Task PublishAsync<TEvent>(TEvent @event)
+        public async Task PublishAsync<TEvent>(TEvent @event)
         {
-            throw new System.NotImplementedException();
+            var context = _context.Value;
+            
+            var handlers = _sp.GetServices<IEventHandlerAsync<TEvent>>();
+            
+            var tasks = new List<Task>();
+            
+            foreach (var handler in handlers)
+            {
+                if(!handler.IsApplicable(context, @event)) continue;
+                
+                tasks.Add(handler.Handle(context, @event));
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         public IResponse<TResult> Response<TResult>()
@@ -168,6 +143,38 @@ namespace Bolt.RequestBus
         public Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TRequest, TResult>(TRequest request)
         {
             throw new System.NotImplementedException();
+        }
+        
+        
+        private static IRequestBusContext BuildContext(IServiceProvider sp)
+        {
+            var context = new RequestBusContext();
+            var writers = sp.GetServices<IRequestBusContextWriter>();
+
+            foreach (var writer in writers)
+            {
+                writer.Write(context);
+            }
+            
+            return context;
+        }
+
+        private IResponse<TResult> Send<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
+        {
+            var context = _context.Value;
+            
+            var handlers = _sp.GetServices<IRequestHandler<TRequest, TResult>>();
+            
+            foreach (var handler in handlers)
+            {
+                if(!handler.IsApplicable(context, request)) continue;
+
+                return handler.Handle(context, request);
+            }
+
+            if (ignoreNoHandler) return Bolt.RequestBus.Response.Failed<TResult>();
+            
+            throw new NoRequestHandlerAvailable(typeof(IRequestHandler<TRequest,None>));
         }
     }
 }
