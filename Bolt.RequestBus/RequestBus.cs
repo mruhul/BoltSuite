@@ -93,12 +93,12 @@ namespace Bolt.RequestBus
 
         public IResponse<TResult> Send<TRequest, TResult>(TRequest request)
         {
-            throw new System.NotImplementedException();
+            return Send<TRequest, TResult>(request, ignoreNoHandler: false);
         }
 
         public IResponse<TResult> TrySend<TRequest, TResult>(TRequest request)
         {
-            throw new System.NotImplementedException();
+            return Send<TRequest, TResult>(request, ignoreNoHandler: true);
         }
 
         public void Publish<TEvent>(TEvent @event)
