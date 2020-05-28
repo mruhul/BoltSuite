@@ -14,7 +14,7 @@ namespace Bolt.RequestBus.Tests.Infra
             return sc;
         }
 
-        public static IRequestBus GetRequestBus(Action<IServiceCollection> register)
+        public static IRequestBus GetRequestBus(Action<IServiceCollection> register = null)
         {
             var sc = ServiceCollection();
             register?.Invoke(sc);

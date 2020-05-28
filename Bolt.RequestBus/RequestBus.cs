@@ -32,17 +32,6 @@ namespace Bolt.RequestBus
         Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TRequest,TResult>(TRequest request);
     }
 
-    public interface IResponse
-    {
-        bool IsSucceed { get; }
-        IEnumerable<IError> Errors { get; }
-    }
-
-    public interface IResponse<out TResult> : IResponse
-    {
-        TResult Value { get; }
-    }
-
     public interface IError
     {
         string Code { get; }
@@ -73,15 +62,33 @@ namespace Bolt.RequestBus
             
             return context;
         }
+
+        private IResponse<TResult> Send<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
+        {
+            var context = _context.Value;
+            
+            var handlers = _sp.GetServices<IRequestHandler<TRequest, TResult>>();
+            
+            foreach (var handler in handlers)
+            {
+                if(!handler.IsApplicable(context, request)) continue;
+
+                return handler.Handle(context, request);
+            }
+
+            if (ignoreNoHandler) return Bolt.RequestBus.Response.Failed<TResult>();
+            
+            throw new NoRequestHandlerAvailable(typeof(IRequestHandler<TRequest,None>));
+        }
         
         public IResponse Send<TRequest>(TRequest request)
         {
-            throw new System.NotImplementedException();
+            return Send<TRequest, None>(request, ignoreNoHandler: false);
         }
 
         public IResponse TrySend<TRequest>(TRequest request)
         {
-            throw new System.NotImplementedException();
+            return Send<TRequest, None>(request, ignoreNoHandler: false);
         }
 
         public IResponse<TResult> Send<TRequest, TResult>(TRequest request)
