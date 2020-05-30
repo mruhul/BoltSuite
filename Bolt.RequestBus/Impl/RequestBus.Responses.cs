@@ -108,7 +108,7 @@ namespace Bolt.RequestBus.Impl
                 => x.ExecutionHint == ExecutionHint.Main || x.ExecutionHint == ExecutionHint.Independent);
 
             var firstBatchHandlerTasks = new List<Task<IResponse<TResult>>>();
-            IResponse<TResult> mainResponse;
+            
             var mainHandlerIndex = -1;
             var index = 0;
             foreach (var handler in firstBatchHandlers)

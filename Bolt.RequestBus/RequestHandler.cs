@@ -4,14 +4,14 @@ namespace Bolt.RequestBus
 {
     public interface IRequestHandler<in TRequest, out TResult>
     {
-        public IResponse<TResult> Handle(IRequestBusContext context, TRequest request);
-        public bool IsApplicable(IRequestBusContext context, TRequest request);
+        IResponse<TResult> Handle(IRequestBusContext context, TRequest request);
+        bool IsApplicable(IRequestBusContext context, TRequest request);
     }
     
     public interface IRequestHandlerAsync<in TRequest, TResult>
     {
-        public Task<IResponse<TResult>> Handle(IRequestBusContext context, TRequest request);
-        public bool IsApplicable(IRequestBusContext context, TRequest request);
+        Task<IResponse<TResult>> Handle(IRequestBusContext context, TRequest request);
+        bool IsApplicable(IRequestBusContext context, TRequest request);
     }
     
     public abstract class RequestHandler<TRequest> : IRequestHandler<TRequest, None>

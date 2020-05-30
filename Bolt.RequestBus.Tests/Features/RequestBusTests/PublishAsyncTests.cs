@@ -30,7 +30,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         internal class OrderPlaced
         {
-            public List<string> HandlersProcessed { get; set; } = new List<string>();
+            public List<string> HandlersProcessed { get; } = new List<string>();
         }
 
         internal class OrderPlacedTest1EventHandler : EventHandlerAsync<OrderPlaced>
