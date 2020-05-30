@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Bolt.RequestBus.Tests
+namespace Bolt.RequestBus.Tests.Features
 {
     public class IocSetupTests
     {

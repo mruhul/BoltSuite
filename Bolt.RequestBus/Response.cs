@@ -20,13 +20,29 @@ namespace Bolt.RequestBus
         public IEnumerable<IError> Errors { get; private set; } = Enumerable.Empty<IError>();
         
         public static IResponse Succeed() => new Response{ IsSucceed = true };
+        
+        public static IResponse Failed(IEnumerable<IError> errors) => new Response 
+        { 
+            IsSucceed = false, 
+            Errors = errors ?? Enumerable.Empty<IError>() 
+        };
+        
         public static IResponse Failed(params IError[] errors) => new Response 
             { 
                 IsSucceed = false, 
                 Errors = errors ?? Enumerable.Empty<IError>() 
             };
+        
         public static IResponse<TResult> Succeed<TResult>(TResult result) => new Response<TResult>{ IsSucceed = true, Value = result };
+        
         public static IResponse<TResult> Failed<TResult>(params IError[] errors) => new Response<TResult>
+        {
+            IsSucceed = false,
+            Errors = errors ?? Enumerable.Empty<IError>(),
+            Value = default
+        };
+        
+        public static IResponse<TResult> Failed<TResult>(IEnumerable<IError> errors) => new Response<TResult>
         {
             IsSucceed = false,
             Errors = errors ?? Enumerable.Empty<IError>(),

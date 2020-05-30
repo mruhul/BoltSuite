@@ -8,6 +8,7 @@ namespace Bolt.RequestBus
         public static void AddRequestBus(this IServiceCollection sc)
         {
             sc.TryAdd(ServiceDescriptor.Scoped<IRequestBus,RequestBus>());
+            sc.AddLogging();
         }
     }
 }

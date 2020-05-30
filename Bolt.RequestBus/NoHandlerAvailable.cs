@@ -13,9 +13,9 @@ namespace Bolt.RequestBus
         }
     }
     
-    public sealed class NoRequestHandlerAvailable : RequestBusException
+    public sealed class NoHandlerAvailable : RequestBusException
     {
-        public NoRequestHandlerAvailable(Type type) : base(type.FullName)
+        public NoHandlerAvailable(Type type) : base(type.FullName)
         {
         }
     }
