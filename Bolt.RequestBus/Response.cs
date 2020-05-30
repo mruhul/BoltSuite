@@ -14,8 +14,10 @@ namespace Bolt.RequestBus
         TResult Value { get; }
     }
 
-    internal sealed class Response : IResponse
+    public sealed class Response : IResponse
     {
+        private Response(){}
+        
         public bool IsSucceed { get; private set; } = false;
         public IEnumerable<IError> Errors { get; private set; } = Enumerable.Empty<IError>();
         

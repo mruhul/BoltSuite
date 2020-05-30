@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Bolt.RequestBus
@@ -37,11 +38,11 @@ namespace Bolt.RequestBus
             return this.IsApplicable(context);
         }
 
-        ExecutionHint IResponseHandler<None, TResult>.ExecutionHint => this.ExecutionHint;
-
         protected abstract TResult Handle(IRequestBusContext context);
+
         protected virtual bool IsApplicable(IRequestBusContext context) => true;
-        protected virtual ExecutionHint ExecutionHint { get; } = ExecutionHint.None;
+
+        public virtual ExecutionHint ExecutionHint => ExecutionHint.None;
     }
     
     public abstract class ResponseHandler<TRequest, TResult> : IResponseHandler<TRequest, TResult>
@@ -53,18 +54,13 @@ namespace Bolt.RequestBus
             return Response.Succeed(result);
         }
 
-        bool IResponseHandler<TRequest, TResult>.IsApplicable(IRequestBusContext context, TRequest request)
-        {
-            return this.IsApplicable(context, request);
-        }
-        
-        ExecutionHint IResponseHandler<TRequest, TResult>.ExecutionHint => this.ExecutionHint;
-
         protected abstract TResult Handle(IRequestBusContext context, TRequest request);
-        protected virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
-        protected virtual ExecutionHint ExecutionHint { get; } = ExecutionHint.None;
+        
+        public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
+        
+        public virtual ExecutionHint ExecutionHint => ExecutionHint.None;
+
     }
-    
     
     public abstract class ResponseHandlerAsync<TResult> : IResponseHandlerAsync<None, TResult>
     {
@@ -76,15 +72,11 @@ namespace Bolt.RequestBus
         }
 
         bool IResponseHandlerAsync<None, TResult>.IsApplicable(IRequestBusContext context, None request)
-        {
-            return this.IsApplicable(context);
-        }
+            => this.IsApplicable(context);
 
-        protected abstract Task<TResult> Handle(IRequestBusContext context);
         protected virtual bool IsApplicable(IRequestBusContext context) => true;
-        
-        ExecutionHint IResponseHandlerAsync<None, TResult>.ExecutionHint => this.ExecutionHint;
-        protected virtual ExecutionHint ExecutionHint { get; } = ExecutionHint.None;
+        public virtual ExecutionHint ExecutionHint => ExecutionHint.None;
+        protected abstract Task<TResult> Handle(IRequestBusContext context);
     }
     
     public abstract class ResponseHandlerAsync<TRequest, TResult> : IResponseHandlerAsync<TRequest, TResult>
@@ -96,15 +88,10 @@ namespace Bolt.RequestBus
             return Response.Succeed(result);
         }
 
-        bool IResponseHandlerAsync<TRequest, TResult>.IsApplicable(IRequestBusContext context, TRequest request)
-        {
-            return this.IsApplicable(context, request);
-        }
+        public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
+
+        public virtual ExecutionHint ExecutionHint => ExecutionHint.None;
 
         protected abstract Task<TResult> Handle(IRequestBusContext context, TRequest request);
-        protected virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
-        
-        ExecutionHint IResponseHandlerAsync<TRequest, TResult>.ExecutionHint => this.ExecutionHint;
-        protected virtual ExecutionHint ExecutionHint { get; } = ExecutionHint.None;
     }
 }

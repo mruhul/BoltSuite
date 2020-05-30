@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Bolt.RequestBus
+namespace Bolt.RequestBus.Impl
 {
     internal sealed partial class RequestBus
     {

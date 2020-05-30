@@ -60,7 +60,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         class TestResult
         {
-            public string Message { get; set; }
+            public string Message { get; set; } 
         }
     }
 }

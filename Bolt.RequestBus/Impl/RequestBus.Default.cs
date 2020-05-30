@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Bolt.RequestBus
+namespace Bolt.RequestBus.Impl
 {
     internal sealed partial class RequestBus : IRequestBus
     {

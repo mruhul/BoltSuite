@@ -15,6 +15,12 @@ namespace Bolt.RequestBus
         /// If no applicable handler found for the request then <see cref="NoHandlerAvailable"/> exception will be thrown.
         /// Before the execution the method will also validate the request if any applicable implementations of <see cref="IRequestValidator{TRequest}"/>.
         /// When any validation failed and instance of <see cref="IResponse"/>> will be send with collection of errors (<see cref="IError"/>>).
+        ///
+        /// When implement a handler of <see cref="IRequestHandler{TRequest,None}"/> you can use
+        /// abstract implementation of <see cref="RequestHandler{TRequest}"/>
+        ///
+        /// For validator you can inherit from abstract <see cref="IRequestValidator{TRequest}"/> to simplify the implementation.
+        /// 
         /// <example>
         /// Sample code to use send method
         /// <code>
@@ -171,12 +177,80 @@ namespace Bolt.RequestBus
         /// <returns>IResponse{TResult}</returns>
         IResponse<TResult> TryResponse<TResult>();
 
+        /// <summary>
+        /// Executes all applicable handlers that implement <see cref="IResponseHandler{None,TResult}"/>
+        /// and return all the responses as a collection of <see cref="IResponse{TResult}"/>. If main handler failed
+        /// then the exception propagates to the caller. Otherwise the method continue executing other handlers and
+        /// return responses fo the successful handlers. The collection response can be add/remove/modify using
+        /// <see cref="IResponseFilter{None,TResult}"/>. When all the handler execution finished the collected result pass
+        /// to the available ResponseFilter to allow them to change response. Handy if you want to execute something
+        /// when execution of all handlers finished.
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns>IEnumerable{IResponse{TResult}}</returns>
         IEnumerable<IResponse<TResult>> Responses<TResult>();
+        
+        /// <summary>
+        /// Validate the input of TRequest using any applicable <see cref="IRequestValidator{TRequest}"/> and when
+        /// validation succeed then executes all applicable handlers that implement <see cref="IResponseHandler{TRequest,TResult}"/>
+        /// and return all the responses as a collection of <see cref="IResponse{TResult}"/>. If main handler failed
+        /// then the exception propagates to the caller. Otherwise the method continue executing other handlers and
+        /// return responses fo the successful handlers. The collection response can be add/remove/modify using
+        /// <see cref="IResponseFilter{TRequest,TResult}"/>. When all the handler execution finished the collected result pass
+        /// to the available ResponseFilter to allow them to change response. Handy if you want to execute something
+        /// when execution of all handlers finished.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns>IEnumerable{IResponse{TResult}}</returns>
         IEnumerable<IResponse<TResult>> Responses<TRequest, TResult>(TRequest request);
 
+        /// <summary>
+        /// Executes first applicable handler that implements <see cref="IResponseHandlerAsync{None,TResult}"/>
+        /// and return the result as <see cref="IResponse{TResult}"/>. When no handler found the method will throw
+        /// <see cref="NoHandlerAvailable"/> exception.
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns>IResponse{TResult}</returns>
         Task<IResponse<TResult>> ResponseAsync<TResult>();
+        
+        /// <summary>
+        /// Executes first applicable handler that implements <see cref="IResponseHandlerAsync{None,TResult}"/>
+        /// and return the result as <see cref="IResponse{TResult}"/>. When no handler found the method will return
+        /// an instance of <see cref="IResponse{TResult}"/> whose IsSucceed value will be false.
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns>IResponse{TResult}</returns>
         Task<IResponse<TResult>> TryResponseAsync<TResult>();
+        
+        /// <summary>
+        /// Executes all applicable handlers that implement <see cref="IResponseHandlerAsync{None,TResult}"/>
+        /// and return all the responses as a collection of <see cref="IResponse{TResult}"/>. If main handler failed
+        /// then the exception propagates to the caller. Otherwise the method continue executing other handlers and
+        /// return responses fo the successful handlers. The collection response can be add/remove/modify using
+        /// <see cref="IResponseFilterAsync{None,TResult}"/>. When all the handler execution finished the collected result pass
+        /// to the available ResponseFilter to allow them to change response. Handy if you want to execute something
+        /// when execution of all handlers finished.
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns>Task{IEnumerable{IResponse{TResult}}}</returns>
         Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TResult>();
+        
+        /// <summary>
+        /// Validate the input of TRequest using any applicable <see cref="IRequestValidatorAsync{TRequest}"/> and when
+        /// validation succeed then executes all applicable handlers that implement <see cref="IResponseHandler{TRequest,TResult}"/>
+        /// and return all the responses as a collection of <see cref="IResponse{TResult}"/>. If main handler failed
+        /// then the exception propagates to the caller. Otherwise the method continue executing other handlers and
+        /// return responses fo the successful handlers. The collection response can be add/remove/modify using
+        /// <see cref="IResponseFilter{TRequest,TResult}"/>. When all the handler execution finished the collected result pass
+        /// to the available ResponseFilter to allow them to change response. Handy if you want to execute something
+        /// when execution of all handlers finished.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns>Task{IEnumerable{IResponse{TResult}}}</returns>
         Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TRequest, TResult>(TRequest request);
     }
 }
