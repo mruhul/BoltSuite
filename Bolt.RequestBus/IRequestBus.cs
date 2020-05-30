@@ -56,6 +56,15 @@ namespace Bolt.RequestBus
         /// The method will also validate the request if there's any applicable <see cref="IRequestValidator{TRequest}"/>
         /// defined and registered in your ioc. If no request handler found to handle the request then the method will
         /// return IResponse instance with property IsSucceed = false
+        ///
+        /// <para>Tips: Use abstract class <see cref="RequestHandler{TRequest}"/> to easily implement an instance
+        /// of <see cref="IRequestHandler{TRequest,None}"/>
+        /// </para>
+        ///
+        /// <para>Tips: Use abstract class <see cref="RequestValidator{TRequest}"/> to easily implement an instance
+        /// of <see cref="IRequestValidator{TRequest}"/> 
+        /// </para>
+        /// 
         /// </summary>
         /// <param name="request"></param>
         /// <typeparam name="TRequest"></typeparam>
