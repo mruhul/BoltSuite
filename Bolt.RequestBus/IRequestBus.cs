@@ -197,7 +197,7 @@ namespace Bolt.RequestBus
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>IEnumerable{IResponse{TResult}}</returns>
-        IEnumerable<IResponse<TResult>> Responses<TResult>();
+        IResponseCollection<TResult> Responses<TResult>();
         
         /// <summary>
         /// Validate the input of TRequest using any applicable <see cref="IRequestValidator{TRequest}"/> and when
@@ -213,7 +213,7 @@ namespace Bolt.RequestBus
         /// <typeparam name="TRequest"></typeparam>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>IEnumerable{IResponse{TResult}}</returns>
-        IEnumerable<IResponse<TResult>> Responses<TRequest, TResult>(TRequest request);
+        IResponseCollection<TResult> Responses<TRequest, TResult>(TRequest request);
 
         /// <summary>
         /// Executes first applicable handler that implements <see cref="IResponseHandlerAsync{None,TResult}"/>
@@ -244,7 +244,7 @@ namespace Bolt.RequestBus
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>Task{IEnumerable{IResponse{TResult}}}</returns>
-        Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TResult>();
+        Task<IResponseCollection<TResult>> ResponsesAsync<TResult>();
         
         /// <summary>
         /// Validate the input of TRequest using any applicable <see cref="IRequestValidatorAsync{TRequest}"/> and when
@@ -260,6 +260,6 @@ namespace Bolt.RequestBus
         /// <typeparam name="TRequest"></typeparam>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>Task{IEnumerable{IResponse{TResult}}}</returns>
-        Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TRequest, TResult>(TRequest request);
+        Task<IResponseCollection<TResult>> ResponsesAsync<TRequest, TResult>(TRequest request);
     }
 }

@@ -27,13 +27,13 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
             
             var rsp = sut.Responses<TestRequest, TestResult>(request);
             
-            rsp.Count().ShouldBe(3);
-            rsp.ShouldAllBe(x => x.IsSucceed);
-            rsp.ShouldAllBe(x => x.Value != null);
-            rsp.ShouldContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(DependentResponseHandler)}");
-            rsp.ShouldContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(MainResponseHandler)}");
-            rsp.ShouldContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(IndependentResponseHandler)}");
-            rsp.ShouldNotContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(DependentNonApplicableResponseHandler)}");
+            rsp.MainResponse.IsSucceed.ShouldBe(true);
+            rsp.MainResponse.Value.ShouldNotBeNull();
+            rsp.MainResponse.Value.Message.ShouldBe($"{request.Name} : handled by {nameof(MainResponseHandler)}");
+            rsp.OtherResponses.Count().ShouldBe(2);
+            rsp.OtherResponses.ShouldContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(DependentResponseHandler)}");
+            rsp.OtherResponses.ShouldContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(IndependentResponseHandler)}");
+            rsp.OtherResponses.ShouldNotContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(DependentNonApplicableResponseHandler)}");
             
         }
 
@@ -55,9 +55,8 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
             
             var rsp = sut.Responses<TestRequest, TestResult>(request);
             
-            rsp.Count().ShouldBe(1);
-            rsp.First().IsSucceed.ShouldBe(false);
-            rsp.First().Errors.Count().ShouldBe(0);
+            rsp.MainResponse.IsSucceed.ShouldBe(false);
+            rsp.MainResponse.Errors.Count().ShouldBe(0);
         }
 
         [Fact]
@@ -77,10 +76,9 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
             
             var rsp = sut.Responses<TestRequest, TestResult>(request);
             
-            rsp.Count().ShouldBe(1);
-            rsp.First().IsSucceed.ShouldBe(true);
-            rsp.First().Value.Message.ShouldBe($"{request.Name} : handled by {nameof(MainResponseHandler)}");
-            rsp.First().Errors.Count().ShouldBe(0);
+            rsp.MainResponse.IsSucceed.ShouldBe(true);
+            rsp.MainResponse.Value.Message.ShouldBe($"{request.Name} : handled by {nameof(MainResponseHandler)}");
+            rsp.MainResponse.Errors.Count().ShouldBe(0);
         }
 
         [Fact]
@@ -101,8 +99,10 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
             var rsp = sut.Responses<TestRequest, TestResult>(request);
             
-            rsp.Count().ShouldBe(3);
-            rsp.ShouldContain(x => x.Value.Message ==  $"{request.Name} filtered by {nameof(ResponseFilter)}");
+            rsp.MainResponse.IsSucceed.ShouldBe(true);
+            rsp.OtherResponses.Count().ShouldBe(2);
+            rsp.OtherResponses.ShouldContain(x => 
+                x.Value.Message ==  $"{request.Name} filtered by {nameof(ResponseFilter)}");
         }
 
         [Fact]
@@ -115,16 +115,17 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
             var rsp = sut.Responses<TestRequest, TestResult>(new TestRequest());
 
-            rsp.Count().ShouldBe(1);
-            rsp.First().IsSucceed.ShouldBe(false);
-            rsp.First().Errors.ShouldContain(x => x.Message == "Name is required.");
+            rsp.MainResponse.ShouldNotBeNull();
+            rsp.MainResponse.IsSucceed.ShouldBeFalse();
+            rsp.MainResponse.Errors.ShouldContain(x => x.Message == "Name is required.");
         }
 
         public class ResponseFilter : ResponseFilter<TestRequest, TestResult>
         {
-            protected override void Filter(IRequestBusContext context, TestRequest request, ICollection<IResponse<TestResult>> currentResult)
+            protected override void Filter(IRequestBusContext context, TestRequest request, 
+                IResponseCollection<TestResult> rspCollection)
             {
-                currentResult.Add(Response.Succeed(new TestResult
+                rspCollection.AddResponse(Response.Succeed(new TestResult
                 {
                     Message = $"{request.Name} filtered by {this.GetType().Name}"
                 }));
@@ -133,9 +134,10 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         public class ResponseFilterNotApplicable : ResponseFilter<TestRequest, TestResult>
         {
-            protected override void Filter(IRequestBusContext context, TestRequest request, ICollection<IResponse<TestResult>> currentResult)
+            protected override void Filter(IRequestBusContext context, TestRequest request, 
+                IResponseCollection<TestResult> rspCollection)
             {
-                currentResult.Add(Response.Succeed(new TestResult
+                rspCollection.AddResponse(Response.Succeed(new TestResult
                 {
                     Message = $"{request.Name} filtered by {this.GetType().Name}"
                 }));

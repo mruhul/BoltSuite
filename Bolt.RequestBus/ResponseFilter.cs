@@ -3,27 +3,26 @@ using System.Threading.Tasks;
 
 namespace Bolt.RequestBus
 {
-    public interface IResponseFilter<in TRequest,TResult>
+    public interface IResponseFilter<in TRequest, TResult>
     {
-        void Filter(IRequestBusContext context, TRequest request,
-            ICollection<IResponse<TResult>> currentResult);
+        void Filter(IRequestBusContext context, TRequest request, IResponseCollection<TResult> rspCollection);
 
         bool IsApplicable(IRequestBusContext context, TRequest request);
     }
     
-    public interface IResponseFilterAsync<in TRequest,TResult>
+    public interface IResponseFilterAsync<in TRequest, TResult>
     {
         Task Filter(IRequestBusContext context, TRequest request,
-            ICollection<IResponse<TResult>> currentResult);
+            IResponseCollection<TResult> rspCollection);
 
         bool IsApplicable(IRequestBusContext context, TRequest request);
     }
 
     public abstract class ResponseFilter<TResult> : IResponseFilter<None, TResult>
     {
-        void IResponseFilter<None, TResult>.Filter(IRequestBusContext context, None request, ICollection<IResponse<TResult>> currentResult)
+        void IResponseFilter<None, TResult>.Filter(IRequestBusContext context, None request, IResponseCollection<TResult> rspCollection)
         {
-            this.Filter(context, currentResult);
+            this.Filter(context, rspCollection);
         }
 
         bool IResponseFilter<None, TResult>.IsApplicable(IRequestBusContext context, None request)
@@ -31,29 +30,27 @@ namespace Bolt.RequestBus
             return this.IsApplicable(context);
         }
 
-        protected abstract void Filter(IRequestBusContext context,
-            ICollection<IResponse<TResult>> currentResult);
+        protected abstract void Filter(IRequestBusContext context, IResponseCollection<TResult> rspCollection);
 
         protected virtual bool IsApplicable(IRequestBusContext context) => true;
     }
     
     public abstract class ResponseFilter<TRequest, TResult> : IResponseFilter<TRequest, TResult>
     {
-        void IResponseFilter<TRequest, TResult>.Filter(IRequestBusContext context, TRequest request, ICollection<IResponse<TResult>> currentResult)
+        void IResponseFilter<TRequest, TResult>.Filter(IRequestBusContext context, TRequest request, IResponseCollection<TResult> rspCollection)
         {
-            this.Filter(context, request, currentResult);
+            this.Filter(context, request, rspCollection);
         }
-        protected abstract void Filter(IRequestBusContext context, TRequest request,
-            ICollection<IResponse<TResult>> currentResult);
+        protected abstract void Filter(IRequestBusContext context, TRequest request, IResponseCollection<TResult> rspCollection);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
     }
     
     public abstract class ResponseFilterAsync<TResult> : IResponseFilterAsync<None, TResult>
     {
-        Task IResponseFilterAsync<None, TResult>.Filter(IRequestBusContext context, None request, ICollection<IResponse<TResult>> currentResult)
+        Task IResponseFilterAsync<None, TResult>.Filter(IRequestBusContext context, None request, IResponseCollection<TResult> rspCollection)
         {
-            return this.Filter(context, currentResult);
+            return this.Filter(context, rspCollection);
         }
 
         bool IResponseFilterAsync<None, TResult>.IsApplicable(IRequestBusContext context, None request)
@@ -61,21 +58,19 @@ namespace Bolt.RequestBus
             return this.IsApplicable(context);
         }
 
-        protected abstract Task Filter(IRequestBusContext context,
-            ICollection<IResponse<TResult>> currentResult);
+        protected abstract Task Filter(IRequestBusContext context, IResponseCollection<TResult> rspCollection);
 
         protected virtual bool IsApplicable(IRequestBusContext context) => true;
     }
     
     public abstract class ResponseFilterAsync<TRequest, TResult> : IResponseFilterAsync<TRequest, TResult>
     {
-        Task IResponseFilterAsync<TRequest, TResult>.Filter(IRequestBusContext context, TRequest request, ICollection<IResponse<TResult>> currentResult)
+        Task IResponseFilterAsync<TRequest, TResult>.Filter(IRequestBusContext context, TRequest request, IResponseCollection<TResult> rspCollection)
         {
-            return this.Filter(context, request, currentResult);
+            return this.Filter(context, request, rspCollection);
         }
 
-        protected abstract Task Filter(IRequestBusContext context, TRequest request,
-            ICollection<IResponse<TResult>> currentResult);
+        protected abstract Task Filter(IRequestBusContext context, TRequest request, IResponseCollection<TResult> rspCollection);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
     }

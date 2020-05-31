@@ -50,6 +50,13 @@ namespace Bolt.RequestBus
             Errors = errors ?? Enumerable.Empty<IError>(),
             Value = default
         };
+        
+        public static IResponse<TResult> Failed<TResult>(IEnumerable<IError> errors, TResult value) => new Response<TResult>
+        {
+            IsSucceed = false,
+            Errors = errors ?? Enumerable.Empty<IError>(),
+            Value = value
+        };
     }
 
     internal sealed class Response<TResult> : IResponse<TResult>

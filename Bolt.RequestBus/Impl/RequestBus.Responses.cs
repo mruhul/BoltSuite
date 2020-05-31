@@ -10,52 +10,56 @@ namespace Bolt.RequestBus.Impl
 {
     internal sealed partial class RequestBus
     {
-        public IEnumerable<IResponse<TResult>> Responses<TResult>()
+        public IResponseCollection<TResult> Responses<TResult>()
         {
             return Responses<None, TResult>(None.Instance, isNoneRequest: true);
         }
 
-        public IEnumerable<IResponse<TResult>> Responses<TRequest, TResult>(TRequest request)
+        public IResponseCollection<TResult> Responses<TRequest, TResult>(TRequest request)
         {
             return Responses<TRequest, TResult>(request, isNoneRequest: false);
         }
 
-        public Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TResult>()
+        public Task<IResponseCollection<TResult>> ResponsesAsync<TResult>()
         {
             return ResponsesAsync<None, TResult>(None.Instance, isNoneRequest: true);
         }
 
-        public Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TRequest, TResult>(TRequest request)
+        public Task<IResponseCollection<TResult>> ResponsesAsync<TRequest, TResult>(TRequest request)
         {
             return ResponsesAsync<TRequest, TResult>(request, isNoneRequest: false);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IEnumerable<IResponse<TResult>> Responses<TRequest, TResult>(TRequest request, bool isNoneRequest)
+        private IResponseCollection<TResult> Responses<TRequest, TResult>(TRequest request, bool isNoneRequest)
         {
             var context = _context.Value;
-
+            var rspCollection = new ResponseCollection<TResult>();
+            
             if (!isNoneRequest)
             {
                 var valRsp = Validate<TRequest, TResult>(context, request);
 
-                if (valRsp != null) return new[] {valRsp};
+                if (valRsp != null)
+                {
+                    rspCollection.MainResponse = valRsp;
+                    
+                    return rspCollection;
+                }
             }
 
             var applicableHandlers = _sp.GetServices<IResponseHandler<TRequest, TResult>>()
                 .Where(x => x.IsApplicable(context, request)).ToArray();
-
-            var result = new List<IResponse<TResult>>();
 
             var mainHandler = applicableHandlers.FirstOrDefault(x => x.ExecutionHint == ExecutionHint.Main);
 
             if (mainHandler != null)
             {
                 var rsp = mainHandler.Handle(context, request);
-
-                result.Add(rsp);
                 
-                if (!rsp.IsSucceed) return result;
+                rspCollection.MainResponse = rsp;
+                
+                if (!rsp.IsSucceed) return rspCollection;
             }
 
             var otherHandlers = applicableHandlers
@@ -66,7 +70,7 @@ namespace Bolt.RequestBus.Impl
             {
                 try
                 {
-                    result.Add(otherHandler.Handle(context, request));
+                    rspCollection.AddResponse(otherHandler.Handle(context, request));
                 }
                 catch (Exception e)
                 {
@@ -80,29 +84,36 @@ namespace Bolt.RequestBus.Impl
             {
                 if(!filter.IsApplicable(context, request)) continue;
                 
-                filter.Filter(context, request, result);
+                filter.Filter(context, request, rspCollection);
             }
+
+            rspCollection.MainResponse ??= Bolt.RequestBus.Response.Succeed<TResult>(default);
             
-            return result;
+            return rspCollection;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private async Task<IEnumerable<IResponse<TResult>>> ResponsesAsync<TRequest, TResult>(TRequest request,
+        private async Task<IResponseCollection<TResult>> ResponsesAsync<TRequest, TResult>(TRequest request,
             bool isNoneRequest)
         {
             var context = _context.Value;
+            
+            var rspCollection = new ResponseCollection<TResult>();
 
             if (!isNoneRequest)
             {
                 var valRsp = await ValidateAsync<TRequest, TResult>(context, request);
 
-                if (valRsp != null) return new[] {valRsp};
+                if (valRsp != null)
+                {
+                    rspCollection.MainResponse = valRsp;
+                    
+                    return rspCollection;
+                };
             }
 
             var applicableHandlers = _sp.GetServices<IResponseHandlerAsync<TRequest, TResult>>()
                 .Where(x => x.IsApplicable(context, request)).ToArray();
-
-            var result = new List<IResponse<TResult>>();
 
             var firstBatchHandlers = applicableHandlers.Where(x
                 => x.ExecutionHint == ExecutionHint.Main || x.ExecutionHint == ExecutionHint.Independent);
@@ -113,7 +124,7 @@ namespace Bolt.RequestBus.Impl
             var index = 0;
             foreach (var handler in firstBatchHandlers)
             {
-                if (handler.ExecutionHint == ExecutionHint.Main) mainHandlerIndex = index;
+                if (mainHandlerIndex == -1 && handler.ExecutionHint == ExecutionHint.Main) mainHandlerIndex = index;
 
                 firstBatchHandlerTasks.Add(ExecuteResponseHandler(context, handler, request));
 
@@ -129,14 +140,17 @@ namespace Bolt.RequestBus.Impl
                 
                 if (index == mainHandlerIndex)
                 {
-                    // main handler response can't be null as it throws exception if anything goes wrong
+                    rspCollection.MainResponse = handlerRsp;
+                    
                     if (!handlerRsp.IsSucceed)
                     {
-                        return new[] {handlerRsp};
+                        return rspCollection;
                     }
                 }
-                
-                if(handlerRsp != null) result.Add(batchHandler.Result);
+                else
+                {
+                    rspCollection.AddResponse(batchHandler.Result);
+                }
                 
                 index++;
             }
@@ -155,7 +169,7 @@ namespace Bolt.RequestBus.Impl
 
             foreach (var task in otherHandlerTasks)
             {
-                if(task.Result != null) result.Add(task.Result);
+                rspCollection.AddResponse(task.Result);
             }
             
             var filters = _sp.GetServices<IResponseFilterAsync<TRequest, TResult>>();
@@ -164,10 +178,12 @@ namespace Bolt.RequestBus.Impl
             {
                 if(!filter.IsApplicable(context, request)) continue;
                 
-                await filter.Filter(context, request, result);
+                await filter.Filter(context, request, rspCollection);
             }
+            
+            rspCollection.MainResponse ??= Bolt.RequestBus.Response.Succeed<TResult>(default);
 
-            return result;
+            return rspCollection;
         }
 
         private async Task<IResponse<TResult>> ExecuteResponseHandler<TRequest, TResult>(IRequestBusContext context,
