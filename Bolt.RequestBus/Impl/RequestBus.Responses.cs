@@ -86,8 +86,6 @@ namespace Bolt.RequestBus.Impl
                 
                 filter.Filter(context, request, rspCollection);
             }
-
-            rspCollection.MainResponse ??= Bolt.RequestBus.Response.Succeed<TResult>(default);
             
             return rspCollection;
         }
@@ -180,8 +178,6 @@ namespace Bolt.RequestBus.Impl
                 
                 await filter.Filter(context, request, rspCollection);
             }
-            
-            rspCollection.MainResponse ??= Bolt.RequestBus.Response.Succeed<TResult>(default);
 
             return rspCollection;
         }

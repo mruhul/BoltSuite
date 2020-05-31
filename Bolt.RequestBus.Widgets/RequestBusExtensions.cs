@@ -31,14 +31,20 @@ namespace Bolt.RequestBus.Widgets
                     return result;
                 }
 
-                if (!string.IsNullOrWhiteSpace(rsp.MainResponse.Value.RedirectAction?.Url))
+                if (!string.IsNullOrWhiteSpace(rsp.MainResponse.Value?.RedirectAction?.Url))
                 {
                     result.StatusCode = rsp.MainResponse.Value.StatusCode;
                     result.RedirectAction = rsp.MainResponse.Value.RedirectAction;
                     return result;
                 }
 
+                result.StatusCode = rsp.MainResponse.Value?.StatusCode ?? 200;
+                
                 result.AddResponse(BuildWidgetUnitResponse(rsp.MainResponse));
+            }
+            else
+            {
+                result.StatusCode = 200;
             }
 
             if (rsp.OtherResponses == null) return result;
@@ -55,11 +61,11 @@ namespace Bolt.RequestBus.Widgets
         {
             return new WidgetUnitResponse
             {
-                Data = rsp.Value.Data,
-                Name = rsp.Value.Name,
-                Type = rsp.Value.Type,
+                Data = rsp.Value?.Data,
+                Name = rsp.Value?.Name,
+                Type = rsp.Value?.Type,
                 Errors = rsp.Errors,
-                StatusCode = rsp.Value.StatusCode
+                StatusCode = rsp.Value?.StatusCode ?? 200
             };
         }
     }
