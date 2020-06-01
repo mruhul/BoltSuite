@@ -3,6 +3,9 @@
     <PropertyGroup>
         <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
         <LangVersion>8.0</LangVersion>
+        <Authors>Mohammad Ruhul Amin</Authors>
+        <Version>1.0.0-beta01</Version>
+        <RepositoryUrl>https://github.com/mruhul/BoltSuite/tree/master/Bolt.RequestBus.Widgets</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
