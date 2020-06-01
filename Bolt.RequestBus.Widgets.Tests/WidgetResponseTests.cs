@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -47,8 +46,8 @@ namespace Bolt.RequestBus.Widgets.Tests
             var sut = IocHelper.GetRequestBus(sc =>
             {
                 sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, MainTestWidget>();
-                sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, TestWidget3rd>();
-                sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, TestWidget2nd>();
+                sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, TestWidget3Rd>();
+                sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, TestWidget2Nd>();
             });
 
             var rsp = sut.WidgetResponse(new TestRequest());
@@ -75,7 +74,7 @@ namespace Bolt.RequestBus.Widgets.Tests
             }
         }
 
-        class TestWidget2nd : WidgetResponseHandler<TestRequest>
+        class TestWidget2Nd : WidgetResponseHandler<TestRequest>
         {
             protected override IWidgetResponse Handle(IRequestBusContext context, TestRequest request)
             {
@@ -94,7 +93,7 @@ namespace Bolt.RequestBus.Widgets.Tests
             }
         }
         
-        class TestWidget3rd : WidgetResponseHandler<TestRequest>
+        class TestWidget3Rd : WidgetResponseHandler<TestRequest>
         {
             protected override IWidgetResponse Handle(IRequestBusContext context, TestRequest request)
             {
