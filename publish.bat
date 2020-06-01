@@ -3,7 +3,8 @@ mkdir nupkgs
 cd nupkgs
 del /F /Q *.*
 cd ..
-cd "Bolt.RequestBus"
+set /p project="Enter Project: "
+cd %project%
 dotnet restore
 dotnet build -c Release
 dotnet pack -c Release --no-build --output ../nupkgs
