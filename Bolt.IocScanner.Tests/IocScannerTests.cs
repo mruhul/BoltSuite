@@ -66,7 +66,30 @@ namespace Bolt.IocScanner.Tests
             
             SingletonHelloWorldImpl.InstanceCount.ShouldBe(1);
         }
+
+        [Fact]
+        public void Should_Execute_Impl_Of_ServiceRegistry()
+        {
+            Should.NotThrow(() => _sp.GetRequiredService<IForLoadViaServiceRegistry>());
+            
+        }
     }
+
+    public class ServiceRegistryImpl : IServiceRegistry
+    {
+        public void Register(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddTransient<IForLoadViaServiceRegistry, LoadViaServiceRegistry>();
+        }
+    }
+    
+    public interface IForLoadViaServiceRegistry
+    {
+        
+    }
+    
+    public class LoadViaServiceRegistry : IForLoadViaServiceRegistry
+    {}
     
     public interface IHelloWorld{}
 

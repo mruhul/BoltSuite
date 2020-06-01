@@ -75,6 +75,8 @@ namespace Bolt.IocScanner
                 options.Exclude(t => options.TypesToExclude.Any(e => e.FullName == t.FullName));
             }
 
+            var serviceRegistryType = typeof(IServiceRegistry);
+
             foreach (var assembly in assemblies)
             {
                 var types = assembly.GetTypes();
@@ -86,7 +88,16 @@ namespace Bolt.IocScanner
                     var isAbstract = typeInfo.IsAbstract || typeInfo.IsInterface;
 
                     if (isAbstract) continue;
+                    
+                    if (serviceRegistryType.IsAssignableFrom(type))
+                    {
+                        var registry = Activator.CreateInstance(type) as IServiceRegistry;
 
+                        registry.Register(source);
+
+                        continue;
+                    }
+                    
                     var attributes = typeInfo.GetCustomAttributes();
 
                     if (attributes.Any(a => a.GetType().FullName == skipAutoBindAttributeFullName)) continue;
@@ -96,7 +107,7 @@ namespace Bolt.IocScanner
                     var autoBindAttribute = attributes.FirstOrDefault(x => x.GetType().FullName == autoBindAttributeFullName) as AutoBindAttribute;
 
                     if (autoBindAttribute == null && options.SkipWhenAutoBindMissing) continue;
-                    
+
                     var interfaces = typeInfo.GetInterfaces();
 
                     if (!interfaces.Any())
@@ -105,15 +116,6 @@ namespace Bolt.IocScanner
                         {
                             BindToSelf(source, type, autoBindAttribute);
                         }
-
-                        continue;
-                    }
-
-                    if (interfaces.Any(x => x == typeof(IServiceRegistry)))
-                    {
-                        var registry = Activator.CreateInstance(type) as IServiceRegistry;
-
-                        registry.Register(source);
 
                         continue;
                     }
