@@ -7,9 +7,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.RequestBus.Tests", "Bolt.RequestBus.Tests\Bolt.RequestBus.Tests.csproj", "{56C54662-CDE7-47E5-97C0-2CBD623C76E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Help", "Help", "{81478277-C3B9-4946-9D3F-B972367ED9F3}"
-ProjectSection(SolutionItems) = preProject
-	README.md = README.md
-EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.RequestBus.Widgets", "Bolt.RequestBus.Widgets\Bolt.RequestBus.Widgets.csproj", "{464B8482-8148-475C-9376-589C457C0C26}"
 EndProject

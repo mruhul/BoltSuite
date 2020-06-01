@@ -9,7 +9,7 @@ Add nuget package Bolt.RequestBus in your project. Register the library in your 
     // sc is an instance of IServiceCollection
     sc.AddRequestBus();
 
-Thats it the lib is ready to use in your application.
+That's it the lib is ready to use in your application.
 
 ## Example of using SendAsync method of RequestBus
 
