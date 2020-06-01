@@ -60,7 +60,7 @@ Now we define RequestHandler for that defined request and response as below:
 
 Make sure you register this handler in your IOC
 
-    sc.AddTranisent<IRequestHandlerAsync<BookDetailsRequest,BookDetailsViewModel>, BookDetailsRequestHandler>();
+    sc.AddTransient<IRequestHandlerAsync<BookDetailsRequest,BookDetailsViewModel>, BookDetailsRequestHandler>();
 
 Now here is the example how you can use this handler in your controller using `IRequestBus`
 
