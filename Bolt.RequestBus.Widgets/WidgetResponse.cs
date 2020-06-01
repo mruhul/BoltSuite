@@ -11,10 +11,25 @@ namespace Bolt.RequestBus.Widgets
         public string Type { get; set; }
         public object Data { get; set; }
         
+        /// <summary>
+        /// Smaller number get should display first
+        /// </summary>
+        public int DisplayOrder { get; set; }
+        
         public static IWidgetResponseWithName WithName(string name) => new WidgetResponseBuilder(name);
     }
 
     public interface IWidgetResponseWithName : IWidgetResponseCollectType
+    {
+        
+    }
+
+    public interface IWidgetResponseCollectDisplayOrder
+    {
+        IWidgetResponseWithDisplayOrder WithDisplayOrder(int order);
+    }
+
+    public interface IWidgetResponseWithDisplayOrder : IWidgetResponseBuildInstance
     {
         
     }
@@ -24,7 +39,7 @@ namespace Bolt.RequestBus.Widgets
         IWidgetResponseWithType WithType(string type);
     }
 
-    public interface IWidgetResponseWithType : IWidgetResponseBuildInstance
+    public interface IWidgetResponseWithType : IWidgetResponseBuildInstance, IWidgetResponseCollectDisplayOrder
     {
         
     }
@@ -40,7 +55,8 @@ namespace Bolt.RequestBus.Widgets
 
     internal class WidgetResponseBuilder : 
         IWidgetResponseWithName,
-        IWidgetResponseWithType
+        IWidgetResponseWithType,
+        IWidgetResponseWithDisplayOrder
     {
         private readonly WidgetResponse _rsp = new WidgetResponse();
 
@@ -90,6 +106,12 @@ namespace Bolt.RequestBus.Widgets
             _rsp.RedirectAction = redirectAction;
 
             return Response.Succeed(_rsp);
+        }
+
+        public IWidgetResponseWithDisplayOrder WithDisplayOrder(int order)
+        {
+            _rsp.DisplayOrder = order;
+            return this;
         }
     }
 }

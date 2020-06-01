@@ -44,7 +44,73 @@ namespace Bolt.RequestBus.Widgets.Tests
         [Fact]
         public void Should_Return_All_Widget_Responses()
         {
+            var sut = IocHelper.GetRequestBus(sc =>
+            {
+                sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, MainTestWidget>();
+                sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, TestWidget3rd>();
+                sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, TestWidget2nd>();
+            });
+
+            var rsp = sut.WidgetResponse(new TestRequest());
             
+            rsp.StatusCode.ShouldBe(200);
+            rsp.RedirectAction.ShouldBeNull();
+            rsp.Widgets.ShouldContain(x => x.Name == "main" && x.DisplayOrder == 0);
+            rsp.Widgets.ShouldContain(x => x.Name == "recently-viewed" && x.DisplayOrder == 2);
+            rsp.Widgets.ShouldContain(x => x.Name == "latest-editorials" && x.DisplayOrder == 1);
+        }
+
+        class MainTestWidget : WidgetResponseHandler<TestRequest>
+        {
+            protected override IWidgetResponse Handle(IRequestBusContext context, TestRequest request)
+            {
+                return WidgetResponse
+                    .WithName("main")
+                    .WithType("intro")
+                    .Ok(new
+                    {
+                        Heading = "Welcome to app",
+                        Summary = "This is summary"
+                    });
+            }
+        }
+
+        class TestWidget2nd : WidgetResponseHandler<TestRequest>
+        {
+            protected override IWidgetResponse Handle(IRequestBusContext context, TestRequest request)
+            {
+                return WidgetResponse.WithName("recently-viewed")
+                    .WithType("data-carousel")
+                    .WithDisplayOrder(2)
+                    .Ok(new[]
+                    {
+                        new
+                        {
+                            Id = 1,
+                            Heading = "This is title1",
+                            PhotoUrl = "http://resource.static.com/200x160"
+                        }
+                    });
+            }
+        }
+        
+        class TestWidget3rd : WidgetResponseHandler<TestRequest>
+        {
+            protected override IWidgetResponse Handle(IRequestBusContext context, TestRequest request)
+            {
+                return WidgetResponse.WithName("latest-editorials")
+                    .WithType("data-carousel")
+                    .WithDisplayOrder(1)
+                    .Ok(new[]
+                    {
+                        new
+                        {
+                            Id = 1,
+                            Heading = "This is title1",
+                            PhotoUrl = "http://resource.static.com/200x160"
+                        }
+                    });
+            }
         }
         
         public class TestRequestValidator : RequestValidator<TestRequest>

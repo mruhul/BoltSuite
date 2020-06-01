@@ -65,7 +65,8 @@ namespace Bolt.RequestBus.Widgets
                 Name = rsp.Value?.Name,
                 Type = rsp.Value?.Type,
                 Errors = rsp.Errors,
-                StatusCode = rsp.Value?.StatusCode ?? 200
+                StatusCode = rsp.Value?.StatusCode ?? 200,
+                DisplayOrder = rsp.Value?.DisplayOrder ?? 0
             };
         }
     }

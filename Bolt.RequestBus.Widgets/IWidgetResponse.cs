@@ -11,5 +11,6 @@ namespace Bolt.RequestBus.Widgets
         string Name { get; }
         string Type { get; }
         object Data { get; }
+        int DisplayOrder { get; }
     }
 }

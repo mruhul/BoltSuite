@@ -9,6 +9,7 @@ namespace Bolt.RequestBus.Widgets
         string Name { get; }
         string Type { get; }
         object Data { get; }
+        int DisplayOrder { get; }
     }
 
     internal class WidgetUnitResponse : IWidgetUnitResponse
@@ -18,5 +19,6 @@ namespace Bolt.RequestBus.Widgets
         public string Name { get; set; }
         public string Type { get; set; }
         public object Data { get; set; }
+        public int DisplayOrder { get; set; }
     }
 }
