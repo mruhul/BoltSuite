@@ -12,11 +12,11 @@ namespace Bolt.IocScanner
     {
         internal List<Func<Type,bool>> Excludes { get; set; }
 
-        public IocScannerOptions Exclude(Func<Type, bool> exlclude)
+        public IocScannerOptions Exclude(Func<Type, bool> exclude)
         {
-            if (Excludes == null) Excludes = new List<Func<Type, bool>>();
+            Excludes ??= new List<Func<Type, bool>>();
 
-            Excludes.Add(exlclude);
+            Excludes.Add(exclude);
 
             return this;
         }
@@ -28,7 +28,7 @@ namespace Bolt.IocScanner
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Scane calling assembly and bind all classes in that assembly automatically to service collection based on attribute and convention
+        /// Scan calling assembly and bind all classes in that assembly automatically to service collection based on attribute and convention
         /// </summary>
         /// <param name="source"></param>
         /// <param name="options"></param>
@@ -38,7 +38,7 @@ namespace Bolt.IocScanner
         }
 
         /// <summary>
-        /// Scane calling assembly and autobind all classes in that assembly
+        /// Scan calling assembly and autobind all classes in that assembly
         /// </summary>
         /// <param name="source"></param>
         public static IServiceCollection Scan<T>(this IServiceCollection source)
@@ -56,12 +56,13 @@ namespace Bolt.IocScanner
             return Scan(source, assemblies, null);
         }
 
-
         /// <summary>
         /// Scan supplied assemblies and bind them automatically to service collection based on attribute and convention
         /// </summary>
         /// <param name="source"></param>
         /// <param name="assemblies"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static IServiceCollection Scan(this IServiceCollection source, IEnumerable<Assembly> assemblies, IocScannerOptions options)
         {
             options ??= new IocScannerOptions();
@@ -117,12 +118,9 @@ namespace Bolt.IocScanner
                         continue;
                     }
 
-                    if (autoBindAttribute == null)
-                    {
-                        autoBindAttribute = new AutoBindAttribute(LifeCycle.Transient) { UseTryAdd = false };
-                    }
+                    autoBindAttribute ??= new AutoBindAttribute(LifeCycle.Transient) {UseTryAdd = false};
 
-                    BindToIntefaces(source, type, interfaces, autoBindAttribute);
+                    BindToInterfaces(source, type, interfaces, autoBindAttribute);
                 }
             }
 
@@ -131,18 +129,17 @@ namespace Bolt.IocScanner
 
         private static bool ShouldExclude(Type type, IocScannerOptions options)
         {
-            if (options.Excludes != null)
+            if (options.Excludes == null) return false;
+            
+            foreach (var func in options.Excludes)
             {
-                foreach (var func in options.Excludes)
-                {
-                    if (func.Invoke(type)) return true;
-                }
+                if (func.Invoke(type)) return true;
             }
 
             return false;
         }
 
-        private static void BindToIntefaces(IServiceCollection source, Type type, Type[] interfaces, AutoBindAttribute attr)
+        private static void BindToInterfaces(IServiceCollection source, Type type, Type[] interfaces, AutoBindAttribute attr)
         {
             switch (attr.LifeCycle)
             {
@@ -169,11 +166,11 @@ namespace Bolt.IocScanner
                     {
                         if (attr.UseTryAdd)
                         {
-                            TryBindAsScoped(source, type, interfaces, attr);
+                            TryBindAsScoped(source, type, interfaces);
                         }
                         else
                         {
-                            BindAsScoped(source, type, interfaces, attr);
+                            BindAsScoped(source, type, interfaces);
                         }
 
                         break;
@@ -182,23 +179,23 @@ namespace Bolt.IocScanner
                     {
                         if (attr.UseTryAdd)
                         {
-                            TryBindAsSingleton(source, type, interfaces, attr);
+                            TryBindAsSingleton(source, type, interfaces);
                         }
                         else
                         {
-                            BindAsSingleton(source, type, interfaces, attr);
+                            BindAsSingleton(source, type, interfaces);
                         }
 
                         break;
                     }
                 default:
                     {
-                        throw new Exception($"Unsupported LifcycleType {attr.LifeCycle} provided");
+                        throw new Exception($"Unsupported LifecycleType {attr.LifeCycle} provided");
                     }
             }
         }
 
-        private static void TryBindAsSingleton(IServiceCollection source, Type type, Type[] interfaces, AutoBindAttribute attr)
+        private static void TryBindAsSingleton(IServiceCollection source, Type type, Type[] interfaces)
         {
             if (interfaces.Length > 1)
             {
@@ -220,7 +217,7 @@ namespace Bolt.IocScanner
             }
         }
 
-        private static void BindAsSingleton(IServiceCollection source, Type type, Type[] interfaces, AutoBindAttribute attr)
+        private static void BindAsSingleton(IServiceCollection source, Type type, Type[] interfaces)
         {
             if (interfaces.Length > 1)
             {
@@ -243,7 +240,7 @@ namespace Bolt.IocScanner
         }
 
 
-        private static void TryBindAsScoped(IServiceCollection source, Type type, Type[] interfaces, AutoBindAttribute attr)
+        private static void TryBindAsScoped(IServiceCollection source, Type type, Type[] interfaces)
         {
             if (interfaces.Length > 1)
             {
@@ -265,7 +262,7 @@ namespace Bolt.IocScanner
             }
         }
 
-        private static void BindAsScoped(IServiceCollection source, Type type, Type[] interfaces, AutoBindAttribute attr)
+        private static void BindAsScoped(IServiceCollection source, Type type, Type[] interfaces)
         {
             if (interfaces.Length > 1)
             {
