@@ -13,7 +13,10 @@ dotnet build -c Release
 dotnet pack -c Release --no-build --output ../nupkgs
 set /p key="Enter Key: "
 cd ../nupkgs
-dotnet nuget push *.nupkg -s https://www.nuget.org/api/v2/package/ -k %key%
+dotnet nuget push *.nupkg -s https://www.nuget.org/api/v2/package/ -k %key% || goto:error
+echo "Publish completed Successfully"
 cd ..
+goto:completed
 :error
 echo "Process failed"
+:completed
