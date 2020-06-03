@@ -66,7 +66,7 @@ namespace Bolt.App.Core.Extensions.Default.Tests
             
             var sc = new ServiceCollection();
             sc.TryAddSingleton<IConfiguration>(config);
-            sc.AddBoltCore();
+            sc.AddCoreFeatures();
             
             return sc.BuildServiceProvider().GetRequiredService<IConfig<T>>();
         }

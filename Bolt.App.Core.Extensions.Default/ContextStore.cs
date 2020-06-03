@@ -88,11 +88,11 @@ namespace Bolt.App.Core.Extensions.Default
         {
             if(_store.TryGetValue(key, out var result))
             {
-                value = result == null ? default(T) : (T)result;
+                value = result == null ? default : (T)result;
                 return true;
             }
 
-            value = default(T);
+            value = default;
 
             return false;
         }

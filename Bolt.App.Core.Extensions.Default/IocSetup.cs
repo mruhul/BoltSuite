@@ -27,7 +27,7 @@ namespace Bolt.App.Core.Extensions.Default
         /// </summary>
         /// <param name="services"></param>
         /// <param name="options"></param>
-        public static void AddBoltCore(this IServiceCollection services, AppCoreIocSetupOptions options = null)
+        public static void AddCoreFeatures(this IServiceCollection services, AppCoreIocSetupOptions options = null)
         {
             options ??= new AppCoreIocSetupOptions();
             

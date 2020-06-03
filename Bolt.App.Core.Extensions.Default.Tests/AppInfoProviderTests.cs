@@ -42,7 +42,7 @@ namespace Bolt.App.Core.Extensions.Default.Tests
             var sc = new ServiceCollection();
             
             sc.AddSingleton<IConfiguration>(configBuilder.Build());
-            sc.AddBoltCore();
+            sc.AddCoreFeatures();
             
             var sp = sc.BuildServiceProvider();
             var appInfo = sp.GetRequiredService<IAppInfoProvider>();
