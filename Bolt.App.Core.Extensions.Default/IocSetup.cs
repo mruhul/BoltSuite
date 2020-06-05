@@ -34,6 +34,7 @@ namespace Bolt.App.Core.Extensions.Default
             services.TryAddSingleton<IAppInfoProvider, AppInfoProvider>();
             services.TryAdd(ServiceDescriptor.Singleton(typeof(IConfig<>), typeof(DefaultConfig<>)));
             services.TryAddScoped<IContextStore,ContextStore>();
+            services.AddLogging();
 
             if (options.SkipRunningBootstrapperTasks) return;
 
