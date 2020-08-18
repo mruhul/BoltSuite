@@ -1,30 +1,39 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.RequestBus", "Bolt.RequestBus\Bolt.RequestBus.csproj", "{CAB7E2E3-4F90-4A42-9A18-8B32608EF7EF}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30406.217
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.RequestBus", "Bolt.RequestBus\Bolt.RequestBus.csproj", "{CAB7E2E3-4F90-4A42-9A18-8B32608EF7EF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{94F505D6-68C0-4385-94DD-9990E5AD8999}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.RequestBus.Tests", "Bolt.RequestBus.Tests\Bolt.RequestBus.Tests.csproj", "{56C54662-CDE7-47E5-97C0-2CBD623C76E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.RequestBus.Tests", "Bolt.RequestBus.Tests\Bolt.RequestBus.Tests.csproj", "{56C54662-CDE7-47E5-97C0-2CBD623C76E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Help", "Help", "{81478277-C3B9-4946-9D3F-B972367ED9F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.RequestBus.Widgets", "Bolt.RequestBus.Widgets\Bolt.RequestBus.Widgets.csproj", "{464B8482-8148-475C-9376-589C457C0C26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.RequestBus.Widgets", "Bolt.RequestBus.Widgets\Bolt.RequestBus.Widgets.csproj", "{464B8482-8148-475C-9376-589C457C0C26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.RequestBus.Widgets.Tests", "Bolt.RequestBus.Widgets.Tests\Bolt.RequestBus.Widgets.Tests.csproj", "{F0A1652E-8377-47EF-9EC5-22F150BF9F9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.RequestBus.Widgets.Tests", "Bolt.RequestBus.Widgets.Tests\Bolt.RequestBus.Widgets.Tests.csproj", "{F0A1652E-8377-47EF-9EC5-22F150BF9F9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.IocScanner", "Bolt.IocScanner\Bolt.IocScanner.csproj", "{58693364-3B51-4BDC-B323-90D4B3D92648}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.IocScanner", "Bolt.IocScanner\Bolt.IocScanner.csproj", "{58693364-3B51-4BDC-B323-90D4B3D92648}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.IocScanner.Tests", "Bolt.IocScanner.Tests\Bolt.IocScanner.Tests.csproj", "{F138300D-D555-4396-B2FF-7B63CE15EF20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.IocScanner.Tests", "Bolt.IocScanner.Tests\Bolt.IocScanner.Tests.csproj", "{F138300D-D555-4396-B2FF-7B63CE15EF20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.App.Core", "Bolt.App.Core\Bolt.App.Core.csproj", "{CE59A3D7-742C-46B8-994C-1E21FDAEB107}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.App.Core", "Bolt.App.Core\Bolt.App.Core.csproj", "{CE59A3D7-742C-46B8-994C-1E21FDAEB107}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.App.Core.Extensions.Default", "Bolt.App.Core.Extensions.Default\Bolt.App.Core.Extensions.Default.csproj", "{4BC88659-B960-49E9-AFFB-8187C247C00F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.App.Core.Extensions.Default", "Bolt.App.Core.Extensions.Default\Bolt.App.Core.Extensions.Default.csproj", "{4BC88659-B960-49E9-AFFB-8187C247C00F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.App.Core.Extensions.Default.Tests", "Bolt.App.Core.Extensions.Default.Tests\Bolt.App.Core.Extensions.Default.Tests.csproj", "{1DABF15C-6D1B-410A-90AD-08B341C22C5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.App.Core.Extensions.Default.Tests", "Bolt.App.Core.Extensions.Default.Tests\Bolt.App.Core.Extensions.Default.Tests.csproj", "{1DABF15C-6D1B-410A-90AD-08B341C22C5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.Tenancy.Tests", "Bolt.Tenancy.Tests\Bolt.Tenancy.Tests.csproj", "{A9693B8D-A528-45E7-9365-4D381319E737}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.Tenancy.Tests", "Bolt.Tenancy.Tests\Bolt.Tenancy.Tests.csproj", "{A9693B8D-A528-45E7-9365-4D381319E737}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.Tenancy", "Bolt.Tenancy\Bolt.Tenancy.csproj", "{EB009C3D-4957-4AFF-892C-C05E2F09907B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.Tenancy", "Bolt.Tenancy\Bolt.Tenancy.csproj", "{EB009C3D-4957-4AFF-892C-C05E2F09907B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.FluentHttpClient", "Bolt.FluentHttpClient\Bolt.FluentHttpClient.csproj", "{2E68BF76-06A1-4643-AA01-E12583B69153}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.FluentHttpClient.Tests", "Bolt.FluentHttpClient.Tests\Bolt.FluentHttpClient.Tests.csproj", "{D01BE1A1-9491-4CBB-B6BC-15FB9B5315DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.FluentHttpClient.Fakes", "Bolt.FluentHttpClient.Fakes\Bolt.FluentHttpClient.Fakes.csproj", "{3A09F4FC-E7E0-478F-91B8-B61EFE384699}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,6 +85,21 @@ Global
 		{EB009C3D-4957-4AFF-892C-C05E2F09907B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB009C3D-4957-4AFF-892C-C05E2F09907B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB009C3D-4957-4AFF-892C-C05E2F09907B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E68BF76-06A1-4643-AA01-E12583B69153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E68BF76-06A1-4643-AA01-E12583B69153}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E68BF76-06A1-4643-AA01-E12583B69153}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E68BF76-06A1-4643-AA01-E12583B69153}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D01BE1A1-9491-4CBB-B6BC-15FB9B5315DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D01BE1A1-9491-4CBB-B6BC-15FB9B5315DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D01BE1A1-9491-4CBB-B6BC-15FB9B5315DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D01BE1A1-9491-4CBB-B6BC-15FB9B5315DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A09F4FC-E7E0-478F-91B8-B61EFE384699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A09F4FC-E7E0-478F-91B8-B61EFE384699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A09F4FC-E7E0-478F-91B8-B61EFE384699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A09F4FC-E7E0-478F-91B8-B61EFE384699}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{56C54662-CDE7-47E5-97C0-2CBD623C76E1} = {94F505D6-68C0-4385-94DD-9990E5AD8999}
@@ -83,5 +107,9 @@ Global
 		{F138300D-D555-4396-B2FF-7B63CE15EF20} = {94F505D6-68C0-4385-94DD-9990E5AD8999}
 		{1DABF15C-6D1B-410A-90AD-08B341C22C5E} = {94F505D6-68C0-4385-94DD-9990E5AD8999}
 		{A9693B8D-A528-45E7-9365-4D381319E737} = {94F505D6-68C0-4385-94DD-9990E5AD8999}
+		{D01BE1A1-9491-4CBB-B6BC-15FB9B5315DC} = {94F505D6-68C0-4385-94DD-9990E5AD8999}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {29EC2B1A-9503-479F-960A-44FD904AA911}
 	EndGlobalSection
 EndGlobal

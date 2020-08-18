@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <AssemblyName>Bolt.FluentHttpClient</AssemblyName>
+    <PackageTags>Bolt.FluentHttpClient,HttpClient</PackageTags>
+    <Authors>Mohammad Ruhul Amin</Authors>
+    <Version>3.0.0-beta</Version>
+    <RepositoryUrl>https://github.com/mruhul/BoltSuite/tree/master/Bolt.HttpClient</RepositoryUrl>
+    <Description>Provide fluent interface for httpclient with timeout and retry feature</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+</Project>
