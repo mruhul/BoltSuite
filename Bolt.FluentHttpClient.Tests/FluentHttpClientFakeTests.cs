@@ -8,7 +8,7 @@ using Shouldly;
 
 namespace Bolt.FluentHttpClient.Tests
 {
-    public class UnitTest1
+    public class FluentHttpClientFakeTests
     {
         private IServiceScope BuildScope()
         {
@@ -57,28 +57,6 @@ namespace Bolt.FluentHttpClient.Tests
                 .GetAsync<string>();
 
             googleMsg.Content.ShouldBe("Hello World!");
-        }
-
-        [Fact]
-        public async Task Test1()
-        {
-            using var scope = BuildScope();
-
-            var httpClient = scope.ServiceProvider.GetRequiredService<IFluentHttpClient>();
-            
-            var rsp = await httpClient
-                .ForUrl("https://ruhul.free.beeceptor.com/test")
-                .TimeoutInSeconds(10)
-                .Retry(1)
-                .GetRequestAsync();
-
-            var rsp1 = await httpClient
-                .ForUrl("https://ruhul.free.beeceptor.com/test")
-                .Timeout(TimeSpan.FromSeconds(10))
-                .Retry(1)
-                .GetRequestAsync();
-
-            Assert.True(rsp.IsSuccessStatusCode);
         }
     }
 }
