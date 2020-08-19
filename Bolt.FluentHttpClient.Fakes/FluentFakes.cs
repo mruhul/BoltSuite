@@ -25,24 +25,24 @@ namespace Bolt.FluentHttpClient.Fakes
             return new FluentFakeResponseProvider(source);
         }
 
-        public static IFakeResponseHaveCondition Uri(this IFakeResponseHaveCondition source, Func<Uri, bool> condition)
+        public static IFakeResponseHaveCondition WhenUri(this IFakeResponseHaveCondition source, Func<Uri, bool> condition)
         {
             return source.RequestMatch((rq) => condition(rq.RequestUri));
         }
 
-        public static IFakeResponseHaveCondition Header(this IFakeResponseHaveCondition source, Func<HttpRequestHeaders, bool> condition)
+        public static IFakeResponseHaveCondition WhenHeader(this IFakeResponseHaveCondition source, Func<HttpRequestHeaders, bool> condition)
         {
             return source.RequestMatch((rq) => condition(rq.Headers));
         }
 
-        public static IFakeResponseHaveCondition HeaderContains(this IFakeResponseHaveCondition source, string name, string value)
+        public static IFakeResponseHaveCondition WhenHeaderContains(this IFakeResponseHaveCondition source, string name, string value)
         {
-            return source.Header(x => x.Any(h => h.Key == name && string.Join(",", h.Value) == value));
+            return source.WhenHeader(x => x.Any(h => h.Key == name && string.Join(",", h.Value) == value));
         }
 
-        public static IFakeResponseHaveCondition HeaderContains(this IFakeResponseHaveCondition source, string name)
+        public static IFakeResponseHaveCondition WhenHeaderContains(this IFakeResponseHaveCondition source, string name)
         {
-            return source.Header(x => x.Any(h => h.Key == name));
+            return source.WhenHeader(x => x.Any(h => h.Key == name));
         }
 
         public static IFakeResponseProvider RespondWith<T>(this IFakeResponseHaveCondition source, T content, params NameValueUnit[] headers)

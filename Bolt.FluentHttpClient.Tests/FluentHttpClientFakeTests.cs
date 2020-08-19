@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Bolt.FluentHttpClient.Fluent;
@@ -29,7 +28,7 @@ namespace Bolt.FluentHttpClient.Tests
             var httpClient = scope.ServiceProvider.GetRequiredService<IFluentHttpClient>();
 
             scope.FakeHttpClient()
-                .Uri(x => x.AbsoluteUri == "http://www.google.com/")
+                .WhenUri(x => x.AbsoluteUri == "http://www.google.com/")
                 .RespondWith("Hello World");
 
             var googleMsg = await httpClient
@@ -47,8 +46,8 @@ namespace Bolt.FluentHttpClient.Tests
             var httpClient = scope.ServiceProvider.GetRequiredService<IFluentHttpClient>();
 
             scope.FakeHttpClient()
-                .Uri(x => x.AbsoluteUri == "http://www.google.com/")
-                .HeaderContains("test","yes")
+                .WhenUri(x => x.AbsoluteUri == "http://www.google.com/")
+                .WhenHeaderContains("test","yes")
                 .RespondWith("Hello World!");
 
             var googleMsg = await httpClient
