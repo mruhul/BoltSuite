@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,15 +19,37 @@ namespace Bolt.FluentHttpClient
             HttpRequestMessage request, 
             CancellationToken cancellationToken)
         {
-            if(filters != null)
+            var hasFilter = filters != null && filters.Any();
+
+            if(!hasFilter) return await base.SendAsync(request, cancellationToken);
+
+            foreach (var filter in filters)
             {
-                foreach(var filter in filters)
-                {
-                    await filter.Filter(request, cancellationToken);
-                }
+                await filter.Filter(request, cancellationToken);
             }
 
-            return await base.SendAsync(request, cancellationToken);
+            HttpResponseMessage rsp = null;
+
+            try
+            {
+                rsp = await base.SendAsync(request, cancellationToken);
+
+                if (hasFilter)
+                {
+                    foreach (var filter in filters)
+                    {
+                        await filter.Filter(rsp, cancellationToken);
+                    }
+                }
+
+                return rsp;
+            }
+            catch
+            {
+                rsp?.Dispose();
+
+                throw;
+            }
         }
     }
 }

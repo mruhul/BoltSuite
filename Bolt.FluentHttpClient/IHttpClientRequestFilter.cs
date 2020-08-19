@@ -7,5 +7,6 @@ namespace Bolt.FluentHttpClient
     public interface IHttpClientRequestFilter
     {
         ValueTask Filter(HttpRequestMessage msg, CancellationToken cancellationToken);
+        ValueTask Filter(HttpResponseMessage msg, CancellationToken cancellationToken);
     }
 }
