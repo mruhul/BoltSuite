@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -45,12 +46,17 @@ namespace Bolt.FluentHttpClient.Fakes
             return source.WhenHeader(x => x.Any(h => h.Key == name));
         }
 
-        public static IFakeResponseProvider RespondWith<T>(this IFakeResponseHaveCondition source, T content, params NameValueUnit[] headers)
+        public static IFakeResponseProvider RespondWith<T>(this IFakeResponseHaveCondition source, HttpStatusCode statusCode, T content, params NameValueUnit[] headers)
         {
             var msg = new HttpResponseMessage
             {
-                Content = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json")
+                StatusCode = statusCode
             };
+
+            if(content != null)
+            {
+                msg.Content = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
+            }
 
             if(headers != null)
             {
@@ -61,6 +67,21 @@ namespace Bolt.FluentHttpClient.Fakes
             }
 
             return source.RespondWith(msg);
+        }
+
+        public static IFakeResponseProvider RespondWith(this IFakeResponseHaveCondition source, HttpStatusCode statusCode, params NameValueUnit[] headers)
+        {
+            return source.RespondWith<object>(statusCode, null, headers);
+        }
+
+        public static IFakeResponseProvider RespondOk<T>(this IFakeResponseHaveCondition source, T content, params NameValueUnit[] headers)
+        {
+            return source.RespondWith<object>(HttpStatusCode.OK, content, headers);
+        }
+
+        public static IFakeResponseProvider RespondOk<T>(this IFakeResponseHaveCondition source, params NameValueUnit[] headers)
+        {
+            return source.RespondOk<object>(null, headers);
         }
     }
 

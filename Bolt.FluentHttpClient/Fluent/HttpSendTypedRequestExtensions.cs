@@ -14,7 +14,7 @@ namespace Bolt.FluentHttpClient.Fluent
         /// <param name="source"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<IHttpResponse> GetAsync(this IHttpSendTypedRequest source, CancellationToken cancellationToken)
+        public static Task<IHttpResponse> GetAsync(this IHttpSendTypedRequest source, CancellationToken cancellationToken = default)
         {
             return source.SendAsync(HttpMethod.Get, cancellationToken);
         }
