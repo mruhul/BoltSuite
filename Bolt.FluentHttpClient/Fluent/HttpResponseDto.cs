@@ -26,4 +26,19 @@ namespace Bolt.FluentHttpClient.Fluent
     {
         public TContent Content { get; internal set; }
     }
+
+    public static class HttpResponseExtensions
+    {
+        public static string Location(this IHttpResponse rsp)
+        {
+            if (rsp.Headers == null) return string.Empty;
+            
+            if(rsp.Headers.TryGetValue("Location", out var value))
+            {
+                return value;
+            }
+
+            return string.Empty;
+        }
+    }
 }

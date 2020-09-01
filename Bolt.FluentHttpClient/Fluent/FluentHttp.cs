@@ -200,20 +200,22 @@ namespace Bolt.FluentHttpClient.Fluent
             ?? serializers.FirstOrDefault();
 
 
-        private void PopulateResponseDto(HttpResponseDto rsp, HttpResponseMessage rspMsg)
+        private void PopulateResponseDto(HttpResponseDto rsp, HttpResponseMessage sourceRspMsg)
         {
-            rsp.StatusCode = rspMsg.StatusCode;
-            rsp.IsSuccessStatusCode = rspMsg.IsSuccessStatusCode;
+            rsp.StatusCode = sourceRspMsg.StatusCode;
+            rsp.IsSuccessStatusCode = sourceRspMsg.IsSuccessStatusCode;
 
             var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            if (rspMsg.Headers != null)
+            if (sourceRspMsg.Headers != null)
             {
-                foreach (var header in rspMsg.Headers)
+                foreach (var header in sourceRspMsg.Headers)
                 {
                     headers[header.Key] = header.Value == null ? string.Empty : string.Join(",", header.Value);
                 }
             }
+
+            rsp.Headers = headers;
         }
 
         private async ValueTask<HttpResponseDto> BuildResponseDto(HttpResponseMessage rspMsg, CancellationToken cancellationToken)
@@ -276,11 +278,11 @@ namespace Bolt.FluentHttpClient.Fluent
 
         public async Task<IHttpResponse> SendAsync<TInput>(HttpMethod method, TInput content, string contentType, CancellationToken cancellationToken)
         {
-            using var streamContent = await BuildContent(content, contentType, cancellationToken);
-
-            using var rsp = await this.SendRequestAsync(method, streamContent, cancellationToken);
-
-            return await BuildResponseDto(rsp, cancellationToken);
+            using (var streamContent = await BuildContent(content, contentType, cancellationToken))
+            {
+                using var rsp = await this.SendRequestAsync(method, streamContent, cancellationToken);
+                return await BuildResponseDto(rsp, cancellationToken);
+            }
         }
 
         public async Task<IHttpResponse<TOutput>> SendAsync<TInput, TOutput>(HttpMethod method, TInput content, string contentType, CancellationToken cancellationToken)

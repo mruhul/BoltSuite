@@ -4,20 +4,22 @@ using System.Threading.Tasks;
 
 namespace Bolt.FluentHttpClient.Fakes
 {
-    internal sealed class FakeHttpClientWrapper : IHttpClientWrapper
+    public class FakeHttpMessageHandler : DelegatingHandler
     {
         private readonly IFakeResponseProvider fakeResponseProvider;
 
-        public FakeHttpClientWrapper(IFakeResponseProvider fakeResponseProvider)
+        public FakeHttpMessageHandler(IFakeResponseProvider fakeResponseProvider)
         {
             this.fakeResponseProvider = fakeResponseProvider;
         }
 
-        public async Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request, CancellationToken cancellation)
+        protected override async Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
         {
             var rsp = await fakeResponseProvider.TryGetFakeResponseFor(request);
 
-            if (rsp == null) return await client.SendAsync(request, cancellation);
+            if (rsp == null) return await base.SendAsync(request, cancellationToken);
 
             return rsp;
         }

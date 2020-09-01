@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Bolt.FluentHttpClient.Fakes
 {
     public interface IFakeResponseProvider
     {
         void AddFakeResponse(Func<HttpRequestMessage, HttpResponseMessage> fakes);
-        HttpResponseMessage TryGetFakeResponseFor(HttpRequestMessage request);
+        Task<HttpResponseMessage> TryGetFakeResponseFor(HttpRequestMessage request);
     }
 
     internal sealed class FakeHttpResponseProvider : IFakeResponseProvider
@@ -21,15 +22,20 @@ namespace Bolt.FluentHttpClient.Fakes
             fakes.Add(fake);
         }
 
-        public HttpResponseMessage TryGetFakeResponseFor(HttpRequestMessage request)
+        public Task<HttpResponseMessage> TryGetFakeResponseFor(HttpRequestMessage request)
         {
             foreach(var fake in fakes)
             {
                 var msg = fake(request);
-                if (msg != null) return msg;
+                if (msg != null)
+                {
+                    msg.Headers.Add("x-fake-response", "true");
+
+                    return Task.FromResult(msg);
+                }
             }
 
-            return null;
+            return Task.FromResult<HttpResponseMessage>(null);
         }
     }
 }

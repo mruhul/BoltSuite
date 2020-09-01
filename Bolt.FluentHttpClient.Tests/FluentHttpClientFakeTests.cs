@@ -13,8 +13,12 @@ namespace Bolt.FluentHttpClient.Tests
         private IServiceScope BuildScope()
         {
             var sc = new ServiceCollection();
-            sc.AddFluentHttpClientFake();
-            sc.AddDefaultFleuntHttpClient();
+
+            sc.AddFluentHttpClient()
+                .AddDefaultHttpHandlers()
+                .AddFakeHttpHandler();
+
+            sc.AddFakeHttpClientWrapper();
 
             var sp = sc.BuildServiceProvider();
 
@@ -33,9 +37,10 @@ namespace Bolt.FluentHttpClient.Tests
                 .RespondOk("Hello World");
 
             var googleMsg = await httpClient
-                .ForUrl("http://www.google.com")
+                .ForUrl("http://www.google.com") 
                 .GetAsync<string>();
 
+            googleMsg.IsFakeResponse().ShouldBeTrue();
             googleMsg.StatusCode.ShouldBe(HttpStatusCode.OK);
             googleMsg.Content.ShouldBe("Hello World");
         }
@@ -57,6 +62,7 @@ namespace Bolt.FluentHttpClient.Tests
                 .Header("test","yes")
                 .GetAsync<string>();
 
+            googleMsg.IsFakeResponse().ShouldBeTrue();
             googleMsg.Content.ShouldBe("Hello World!");
         }
 
@@ -74,7 +80,8 @@ namespace Bolt.FluentHttpClient.Tests
             var rsp = await httpClient
                 .ForUrl("http://www.google.com/bad-request")
                 .GetAsync();
-
+            
+            rsp.IsFakeResponse().ShouldBeTrue();
             rsp.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         }
     }

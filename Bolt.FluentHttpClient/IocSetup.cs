@@ -12,7 +12,9 @@ namespace Bolt.FluentHttpClient
 
     public static class IocSetup
     {
-        public static IServiceCollection AddFluentHttpClient(this IServiceCollection sc, 
+        private const string defaultHttpClientName = "Bolt.DefaultClient";
+
+        public static IHttpClientBuilder AddFluentHttpClient(this IServiceCollection sc, 
             FluentHttpClientSetupOptions options = null)
         {
             options = options ?? new FluentHttpClientSetupOptions();
@@ -28,27 +30,13 @@ namespace Bolt.FluentHttpClient
                 sc.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpContentSerializer, HttpContentJsonSerializer>());
             }
 
-            sc.TryAddSingleton<IHttpClientWrapper, HttpClientWrapper>();
+            sc.TryAddTransient(x => x.GetService<IHttpClientFactory>().CreateClient(defaultHttpClientName));
 
-            return sc;
+            sc.TryAddTransient<IHttpClientWrapper, HttpClientWrapper>();
+
+            return sc.AddHttpClient(defaultHttpClientName);
         }
 
-
-        /// <summary>
-        /// Setup default httpclient with all default message handlers.
-        /// </summary>
-        /// <param name="sc"></param>
-        /// <param name="options"></param>
-        public static void AddDefaultFleuntHttpClient(this IServiceCollection sc, FluentHttpClientSetupOptions options = null)
-        {
-            options = options ?? new FluentHttpClientSetupOptions();
-
-            sc.TryAddTransient(x => x.GetService<IHttpClientFactory>().CreateClient("Default"));
-
-            sc.AddFluentHttpClient(options)
-                .AddHttpClient("Default")
-                .AddDefaultHttpHandlers(options);
-        }
 
         /// <summary>
         /// Add default handlers to your httpclient setup.

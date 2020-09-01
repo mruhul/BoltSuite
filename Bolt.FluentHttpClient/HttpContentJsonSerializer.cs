@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,16 +17,12 @@ namespace Bolt.FluentHttpClient
 
         public ValueTask<T> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken)
         {
-            var serializer = new JsonSerializer();
-            
-            using (var sr = new StreamReader(stream))
-            
-            using (var jsonTextReader = new JsonTextReader(sr))
-            {
-                var value = serializer.Deserialize<T>(jsonTextReader);
+            if (stream == null) return new ValueTask<T>(default(T));
 
-                return new ValueTask<T>(value);
-            }
+            using var reader = new StreamReader(stream);
+            using var jsonReader = new JsonTextReader(reader);
+            var serializer = JsonSerializer.Create();
+            return new ValueTask<T>(serializer.Deserialize<T>(jsonReader));
         }
 
         public bool IsApplicable(string contentType)
@@ -33,17 +30,16 @@ namespace Bolt.FluentHttpClient
             return contentType.IndexOf("json") != -1;
         }
 
-        public Task SerializeAsync<T>(Stream stream, T value, CancellationToken cancellationToken)
+        public async Task SerializeAsync<T>(Stream stream, T value, CancellationToken cancellationToken)
         {
-            using (StreamWriter writer = new StreamWriter(stream))
-            using (JsonTextWriter jsonWriter = new JsonTextWriter(writer))
+            using (var sw = new StreamWriter(stream, new UTF8Encoding(false), 1024, true))
             {
-                JsonSerializer ser = new JsonSerializer();
-                ser.Serialize(jsonWriter, value);
-                jsonWriter.Flush();
+                using var jw = new JsonTextWriter(sw) { Formatting = Formatting.None };
+                JsonSerializer.Create().Serialize(jw, value);
+                await jw.FlushAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            return Task.CompletedTask;
+            stream.Seek(0, SeekOrigin.Begin);
         }
     }
 }
