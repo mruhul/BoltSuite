@@ -92,27 +92,27 @@ namespace Bolt.FluentHttpClient.Fluent
 
         #region put
 
-        public static Task<IHttpResponse> PutAsync<TInput>(this IHttpSendTypedRequest source, TInput input, string contentType, CancellationToken cancellationToken)
+        public static Task<IHttpResponse> PutAsync<TInput>(this IHttpSendTypedRequest source, TInput input, string contentType, CancellationToken cancellationToken = default)
         {
             return source.SendAsync(HttpMethod.Put, input, contentType, cancellationToken);
         }
 
-        public static Task<IHttpResponse> PutAsync<TInput>(this IHttpSendTypedRequest source, TInput input, CancellationToken cancellationToken)
+        public static Task<IHttpResponse> PutAsync<TInput>(this IHttpSendTypedRequest source, TInput input, CancellationToken cancellationToken = default)
         {
             return source.SendAsync(HttpMethod.Put, input, Constants.ContentTypeJson, cancellationToken);
         }
 
-        public static Task<IHttpResponse<TContent>> PutAsync<TContent>(this IHttpSendTypedRequest source, CancellationToken cancellationToken)
+        public static Task<IHttpResponse<TContent>> PutAsync<TContent>(this IHttpSendTypedRequest source, CancellationToken cancellationToken = default)
         {
             return source.SendAsync<TContent>(HttpMethod.Put, cancellationToken);
         }
 
-        public static Task<IHttpResponse<TContent>> PutAsync<TInput, TContent>(this IHttpSendTypedRequest source, TInput input, string contentType, CancellationToken cancellationToken)
+        public static Task<IHttpResponse<TContent>> PutAsync<TInput, TContent>(this IHttpSendTypedRequest source, TInput input, string contentType, CancellationToken cancellationToken = default)
         {
             return source.SendAsync<TInput, TContent>(HttpMethod.Put, input, contentType, cancellationToken);
         }
 
-        public static Task<IHttpResponse<TContent>> PutAsync<TInput, TContent>(this IHttpSendTypedRequest source, TInput input, CancellationToken cancellationToken)
+        public static Task<IHttpResponse<TContent>> PutAsync<TInput, TContent>(this IHttpSendTypedRequest source, TInput input, CancellationToken cancellationToken = default)
         {
             return source.SendAsync<TInput, TContent>(HttpMethod.Put, input, Constants.ContentTypeJson, cancellationToken);
         }

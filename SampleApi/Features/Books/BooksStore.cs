@@ -7,14 +7,34 @@ namespace SampleApi.Features.Books
     [AutoBind(LifeCycle.Singleton)]
     public class BooksStore
     {
-        private Dictionary<string, Book> _books = new Dictionary<string, Book>
+        private Dictionary<string, Book> _books = new Dictionary<string, Book> { };
+
+        public BooksStore()
         {
-            ["1"] = new Book 
+            Restore();
+        }
+
+        public void Restore()
+        {
+            _books = new Dictionary<string, Book>
             {
-                Id = "1",
-                Title = "book1"
-            }
-        };
+                ["1"] = new Book
+                {
+                    Id = "1",
+                    Title = "book1"
+                },
+                ["3"] = new Book
+                {
+                    Id = "3",
+                    Title = "book3"
+                },
+                ["4"] = new Book
+                {
+                    Id = "4",
+                    Title = "book4"
+                }
+            };
+        }
 
         public IEnumerable<Book> GetAll() => _books.Values;
         public Book GetById(string id) => _books.TryGetValue(id, out var book) ? book : null;

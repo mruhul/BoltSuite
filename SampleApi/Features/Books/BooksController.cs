@@ -19,6 +19,20 @@ namespace SampleApi.Features.Books
         [Route("")]
         public IActionResult Post([FromBody]Book book)
         {
+            if(string.IsNullOrWhiteSpace(book.Title))
+            {
+                return BadRequest(new { 
+                    Errors = new[] 
+                    {
+                        new {
+                            Code = "TitleRequired", 
+                            Message = "Title is required.",
+                            PropertyName = "Title"
+                        }
+                    }
+                });
+            }
+
             var id = store.Create(book);
             
             book.Id = id;
@@ -36,6 +50,37 @@ namespace SampleApi.Features.Books
             if (book == null) return NotFound($"Book not found with id {id}");
 
             return Ok(book);
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public IActionResult Put([FromRoute]string id, Book updatedBook)
+        {
+            var book = store.GetById(id);
+
+            if (book == null) return NotFound($"Book not found with id {id}");
+
+            updatedBook.Id = book.Id;
+
+            store.Update(updatedBook);
+
+            return Ok(updatedBook);
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public IActionResult Delete([FromRoute] string id)
+        {
+            var isDeleted = store.Delete(id);
+
+            if (isDeleted)
+            {
+                store.Restore();
+
+                return Ok();
+            }
+
+            return NotFound($"Book not found with id {id} to delete");
         }
     }
 }

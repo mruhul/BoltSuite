@@ -182,7 +182,7 @@ namespace Bolt.FluentHttpClient.Fluent
             return this;
         }
 
-        public IHttpHaveOnFailure OnFailure(Func<HttpStatusCode, string, CancellationToken, Task> onFailure)
+        public IHttpHaveOnFailure OnFailureFromString(Func<HttpStatusCode, string, CancellationToken, Task> onFailure)
         {
             this.onFailure = async (rspMsg, ct) =>
             {

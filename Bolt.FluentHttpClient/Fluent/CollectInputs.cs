@@ -70,6 +70,6 @@ namespace Bolt.FluentHttpClient.Fluent
     {
         IHttpHaveOnFailure OnFailure(Func<HttpStatusCode, Stream, CancellationToken, Task> onFailure);
         IHttpHaveOnFailure OnFailure(Func<HttpResponseMessage, CancellationToken, Task> onFailure);
-        IHttpHaveOnFailure OnFailure(Func<HttpStatusCode, string, CancellationToken, Task> onFailure);
+        IHttpHaveOnFailure OnFailureFromString(Func<HttpStatusCode, string, CancellationToken, Task> onFailure);
     }
 }
