@@ -30,9 +30,9 @@ You need to inject `IFluentHttpClient` in your class as below.
       var rsp = await http
                     .ForUrl($"http://books-api.com/v1/books/{id}")
                     .QueryString("schema","simple")
+                    .Header("name","value")
                     .Timeout(Timespan.FromSeconds(5))
                     .Retry(1) // retrun 1 time on failure like InternalServerError/RequestTimeout
-                    .Header("name","value")
                     //.OnFailure((statsuCode, stream, cancelletionToken) => ...) // if you like to read content of failure scenario from stream
                     //.OnFailureFromString((statsuCode, str, cancelletionToken) => ...) // if you like to read content of failure scenario from string content
                     .GetAsync<Book>();
