@@ -1,4 +1,4 @@
-﻿# Bolt.FluemtHttpClient
+﻿# Bolt.FluentHttpClient
 
 Add fluent interface to easily send http request and read response
 
