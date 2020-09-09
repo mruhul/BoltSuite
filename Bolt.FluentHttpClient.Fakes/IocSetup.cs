@@ -33,15 +33,4 @@ namespace Bolt.FluentHttpClient.Fakes
             builder.AddHttpMessageHandler<FakeHttpMessageHandler>();
         }
     }
-
-    public class FluentHttpClientFakeOption
-    {
-        /// <summary>
-        /// You can setup fake for your httpclient request in two way. One is replace existing httplcientwrapper
-        /// with a fakehttpclientwrapper impl that provided part of this solution. This allow you to fake per scope.
-        /// Or other option is use fakehttpmessagehandler which required you attach a httpmessagehandler part of your
-        /// httpclient setup. httpmessagehandler provide fake at the very last level fake but doesn't honour setup per scope
-        /// </summary>
-        public bool ExcludeFakeHttpClientWrapper { get; set; }
-    }
 }

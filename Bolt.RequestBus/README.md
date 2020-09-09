@@ -75,11 +75,11 @@ Now here is the example how you can use this handler in your controller using `I
 
         public async Task<IActionResult> Get(BookDetailsRequest request)
         {
-            var vm = await _bus.SendAsync<BookDetailsRequest, BookDetailsViewModel>(request);
+            var rsp = await _bus.SendAsync<BookDetailsRequest, BookDetailsViewModel>(request);
 
-            if(vm == null) return NotFound();
+            if(rsp.Value == null) return NotFound();
 
-            return Ok(vm);
+            return Ok(rsp.Value);
         }
     }
 
