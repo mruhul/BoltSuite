@@ -5,9 +5,10 @@
         <AssemblyName>Bolt.App.Core.Extensions.Default</AssemblyName>
         <PackageTags>Bolt.App.Core.Extensions.Default,Bolt</PackageTags>
         <Authors>Mohammad Ruhul Amin</Authors>
-        <Version>1.0.0</Version>
-        <RepositoryUrl>https://github.com/mruhul/BoltSuite/tree/master/Bolt.Core.App</RepositoryUrl>
+        <Version>1.0.1</Version>
+        <RepositoryUrl>https://github.com/mruhul/BoltSuite/tree/master/Bolt.App.Core.Extensions.Default</RepositoryUrl>
         <Description>Default implementation for the Bolt.Core.App abstraction</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>

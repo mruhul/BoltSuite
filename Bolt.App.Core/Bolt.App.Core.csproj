@@ -6,9 +6,10 @@
         <AssemblyName>Bolt.App.Core</AssemblyName>
         <PackageTags>Bolt.App.Core,Bolt</PackageTags>
         <Authors>Mohammad Ruhul Amin</Authors>
-        <Version>1.0.0</Version>
+        <Version>1.0.1</Version>
         <RepositoryUrl>https://github.com/mruhul/BoltSuite/tree/master/Bolt.Core.App</RepositoryUrl>
         <Description>Abstracts for some core features e.g Config, BootstrapperTask, AppInfo</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
