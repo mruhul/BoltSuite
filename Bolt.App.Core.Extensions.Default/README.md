@@ -21,7 +21,8 @@ Say you building a class to download image from image server. And you like to pu
 
 Now you can define your settings as below and decorate your settings dto with configuration path as below:
 
-    [ConfigSectionName("App:ImageFeature", isRequired: false)]
+    /// If you think this settings is mandatory then set isOptional to true. Then the app with throw exception if config section is missing
+    [ConfigSectionName("App:ImageFeature", isOptional: false)]
     public class ImageLoadSettings
     {
         public string ServerUrl { get; set; }
@@ -44,7 +45,7 @@ Thats it. Now you can use the settings directly in your classes as below. No nee
 
 ## How i can run some code in application startup
 
-This lib provide an interface IBootstrapperTask and any implementation of that registered in your ioc will be run on application startup.
+This lib provide an interface IBootstrapperTask and any implementation of that registered in your ioc will be run on application startup. Make sure your register this class in your ioc.
 
     public class SomethingToRunAtStartup : IBootstrapperTask
     {
