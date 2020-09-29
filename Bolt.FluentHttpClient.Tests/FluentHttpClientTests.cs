@@ -38,11 +38,7 @@ namespace Bolt.FluentHttpClient.Tests
             ErrorContainer error = null;
             var rsp = await fixture.HttpClient
                 .ForUrl("http://localhost:4000/v1/books/")
-                .OnFailureFromString((statusCode, sr, ct) =>
-                {
-                    error = JsonConvert.DeserializeObject<ErrorContainer>(sr);
-                    return Task.CompletedTask;
-                })
+                .OnBadRequest<ErrorContainer>(err => error = err)
                 .PostAsync(new Book
                 {
                     Id = "2"

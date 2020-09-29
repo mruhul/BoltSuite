@@ -194,6 +194,32 @@ namespace Bolt.FluentHttpClient.Fluent
             return this;
         }
 
+
+        public IHttpHaveOnFailure OnBadRequest<TError>(Action<TError> onBadRequest)
+        {
+            return this.OnFailure(async (rspMsg, ct) => 
+            {
+                if (rspMsg.StatusCode != HttpStatusCode.BadRequest) return;
+
+                var err = await ReadContentAsync<TError>(rspMsg, ct);
+
+                onBadRequest(err);
+            });
+        }
+
+        private async Task<TContent> ReadContentAsync<TContent>(HttpResponseMessage rspMsg, CancellationToken cancellationToken)
+        {
+            if (rspMsg.Content == null) return default;
+
+            using var cnt = rspMsg.Content;
+
+            using var sr = await cnt.ReadAsStreamAsync();
+            
+            var serializer = AppliedSeriaizer(cnt.Headers?.ContentType?.MediaType);
+            
+            return await serializer.DeserializeAsync<TContent>(sr, cancellationToken);
+        }
+
         private const string ContentTypeJson = "application/json";
         private IHttpContentSerializer AppliedSeriaizer(string contentType)
             => serializers.FirstOrDefault(x => x.IsApplicable(contentType ?? ContentTypeJson))
@@ -243,13 +269,7 @@ namespace Bolt.FluentHttpClient.Fluent
 
             if (rspMsg.IsSuccessStatusCode)
             {
-                if (rspMsg.Content != null)
-                {
-                    using var cnt = rspMsg.Content;
-                    using var sr = await cnt.ReadAsStreamAsync();
-                    var serializer = AppliedSeriaizer(cnt.Headers?.ContentType?.MediaType);
-                    rsp.Content = await serializer.DeserializeAsync<T>(sr, cancellationToken);
-                }
+                rsp.Content = await ReadContentAsync<T>(rspMsg, cancellationToken);
             }
             else
             {
