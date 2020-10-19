@@ -6,9 +6,10 @@
     <AssemblyName>Bolt.FluentHttpClient</AssemblyName>
     <PackageTags>Bolt.FluentHttpClient,HttpClient</PackageTags>
     <Authors>Mohammad Ruhul Amin</Authors>
-    <Version>3.0.0-rc02</Version>
+    <Version>3.0.0</Version>
     <RepositoryUrl>https://github.com/mruhul/BoltSuite/tree/master/Bolt.HttpClient</RepositoryUrl>
     <Description>Provide fluent interface for httpclient with timeout and retry feature</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
