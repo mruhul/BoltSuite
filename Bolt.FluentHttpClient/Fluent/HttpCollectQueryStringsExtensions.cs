@@ -10,12 +10,12 @@ namespace Bolt.FluentHttpClient.Fluent
             return source.QueryStrings(NameValueUnitCollectionMapper.FromDto(data), isValueEncoded);
         }
 
-        public static IHttpHaveQueryStrings QueryStrings<T>(this IHttpCollectQueryStrings source, Dictionary<string,string> data, bool isValueEncoded = false)
+        public static IHttpHaveQueryStrings QueryStrings(this IHttpCollectQueryStrings source, Dictionary<string,string> data, bool isValueEncoded = false)
         {
             return source.QueryStrings(NameValueUnitCollectionMapper.FromDictionary(data), isValueEncoded);
         }
 
-        public static IHttpHaveQueryStrings QueryStrings<T>(this IHttpCollectQueryStrings source, IDictionary<string, string> data, bool isValueEncoded = false)
+        public static IHttpHaveQueryStrings QueryStrings(this IHttpCollectQueryStrings source, IDictionary<string, string> data, bool isValueEncoded = false)
         {
             return source.QueryStrings(NameValueUnitCollectionMapper.FromDictionary(data), isValueEncoded);
         }
