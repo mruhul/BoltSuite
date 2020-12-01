@@ -120,7 +120,7 @@ namespace Bolt.FluentHttpClient.Fluent
                 this.queryParams = new List<NameValueUnit>();
             }
 
-            foreach (var unit in this.queryParams)
+            foreach (var unit in queryParams)
             {
                 AddQueryString(unit, isValueEncoded);
             }
