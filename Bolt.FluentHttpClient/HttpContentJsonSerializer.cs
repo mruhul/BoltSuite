@@ -14,6 +14,7 @@ namespace Bolt.FluentHttpClient
         public bool IgnoreNull { get; set; }
         public bool UseStringEnumConverter { get; set; }
         public bool Indented { get; set; }
+        public bool UtcDateTimeZoneHandling { get; set; }
     }
 
     internal sealed class HttpContentJsonSerializer : IHttpContentSerializer
@@ -30,6 +31,11 @@ namespace Bolt.FluentHttpClient
                 {
                     NamingStrategy = new CamelCaseNamingStrategy(processDictionaryKeys: settings.ProcessDictionaryKeys, overrideSpecifiedNames: true)
                 };
+            }
+
+            if(settings.UtcDateTimeZoneHandling)
+            {
+                this.settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             }
 
             this.settings.NullValueHandling = settings.IgnoreNull ? NullValueHandling.Ignore : NullValueHandling.Include;
