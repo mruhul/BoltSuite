@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 
-namespace Bolt.FluentHttpClient.Fluent
+namespace Bolt.FluentHttpClient
 {
     public interface IHttpResponse
     {
@@ -15,14 +15,14 @@ namespace Bolt.FluentHttpClient.Fluent
         TContent Content { get; }
     }
 
-    internal class HttpResponseDto : IHttpResponse
+    public class HttpResponseDto : IHttpResponse
     {
         public bool IsSuccessStatusCode { get; internal set; }
         public HttpStatusCode StatusCode { get; internal set; }
         public Dictionary<string, string> Headers { get; internal set; }
     }
 
-    internal sealed class HttpResponseDto<TContent> : HttpResponseDto, IHttpResponse<TContent>
+    public sealed class HttpResponseDto<TContent> : HttpResponseDto, IHttpResponse<TContent>
     {
         public TContent Content { get; internal set; }
     }

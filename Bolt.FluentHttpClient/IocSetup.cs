@@ -24,6 +24,7 @@ namespace Bolt.FluentHttpClient
             sc.TryAddTransient<HttpTimeoutHandler>();
             sc.TryAddTransient<HttpRequestFilterHandler>();
             sc.TryAddTransient<IFluentHttpClient, FluentHttp>();
+            sc.TryAddTransient<ITypedHttpClient, TypedHttpClient>();
 
             if(options.UseDefaultSerializer)
             {

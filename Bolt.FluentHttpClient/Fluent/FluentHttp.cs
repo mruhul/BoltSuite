@@ -1,5 +1,4 @@
-﻿using Bolt.FluentHttpClient.Fluent;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,12 +29,17 @@ namespace Bolt.FluentHttpClient.Fluent
         private Func<HttpResponseMessage, CancellationToken, Task> onFailure;
         private readonly IEnumerable<IHttpContentSerializer> serializers;
         private readonly IHttpClientWrapper httpClientWrapper;
+        private readonly ITypedHttpClient typedHttpClient;
         private readonly HttpClient defaultClient;
 
-        public FluentHttp(IEnumerable<IHttpContentSerializer> serializers, IHttpClientWrapper httpClientWrapper, HttpClient defaultClient)
+        public FluentHttp(IEnumerable<IHttpContentSerializer> serializers, 
+            IHttpClientWrapper httpClientWrapper,
+            ITypedHttpClient typedHttpClient,
+            HttpClient defaultClient)
         {
             this.serializers = serializers;
             this.httpClientWrapper = httpClientWrapper;
+            this.typedHttpClient = typedHttpClient;
             this.defaultClient = defaultClient;
         }
 
@@ -225,110 +229,79 @@ namespace Bolt.FluentHttpClient.Fluent
             => serializers.FirstOrDefault(x => x.IsApplicable(contentType ?? ContentTypeJson))
             ?? serializers.FirstOrDefault();
 
-
-        private void PopulateResponseDto(HttpResponseDto rsp, HttpResponseMessage sourceRspMsg)
+                
+        public Task<IHttpResponse> SendAsync(HttpMethod method, CancellationToken cancellationToken)
         {
-            rsp.StatusCode = sourceRspMsg.StatusCode;
-            rsp.IsSuccessStatusCode = sourceRspMsg.IsSuccessStatusCode;
+            return typedHttpClient.SendAsync(client ?? defaultClient,
+                BuildRequestDto(method),
+                onFailure, cancellationToken);
+        }
 
-            var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        public Task<IHttpResponse<TOutput>> SendAsync<TOutput>(HttpMethod method, CancellationToken cancellationToken)
+        {
+            return typedHttpClient.SendAsync<TOutput>(client ?? defaultClient,
+                BuildRequestDto(method),
+                onFailure, cancellationToken);
+        }
 
-            if (sourceRspMsg.Headers != null)
+        public Task<IHttpResponse> SendAsync<TInput>(HttpMethod method, 
+            TInput content, 
+            string contentType, 
+            CancellationToken cancellationToken)
+        {
+            return typedHttpClient.SendAsync(client ?? defaultClient,
+                BuildRequestDto(method, content, contentType),
+                onFailure, cancellationToken);
+        }
+
+        public Task<IHttpResponse<TOutput>> SendAsync<TInput, TOutput>(HttpMethod method, 
+            TInput content, 
+            string contentType, 
+            CancellationToken cancellationToken)
+        {
+            return typedHttpClient.SendAsync<TInput, TOutput>(client ?? defaultClient,
+                BuildRequestDto(method, content, contentType),
+                onFailure, cancellationToken);
+        }
+
+        private HttpRequestDto BuildRequestDto(HttpMethod method)
+        {
+            return new HttpRequestDto
             {
-                foreach (var header in sourceRspMsg.Headers)
-                {
-                    headers[header.Key] = header.Value == null ? string.Empty : string.Join(",", header.Value);
-                }
+                Headers = BuildHeaders(headers),
+                Method = method,
+                RetryCount = retry,
+                Timeout = timeout,
+                Uri = new Uri(url)
+            };
+        }
+
+        private HttpRequestDto<TContent> BuildRequestDto<TContent>(HttpMethod method, TContent content, string contentType)
+        {
+            return new HttpRequestDto<TContent>
+            {
+                Content = content,
+                ContentType = contentType,
+                Headers = BuildHeaders(headers),
+                Method = method,
+                RetryCount = retry,
+                Timeout = timeout,
+                Uri = new Uri(url)
+            };
+        }
+
+        private Dictionary<string,string> BuildHeaders(List<NameValueUnit> source)
+        {
+            if (source == null || source.Count == 0) return null;
+
+            var result = new Dictionary<string, string>();
+
+            foreach(var item in source)
+            {
+                result[item.Name] = item.Value;
             }
 
-            rsp.Headers = headers;
-        }
-
-        private async ValueTask<HttpResponseDto> BuildResponseDto(HttpResponseMessage rspMsg, CancellationToken cancellationToken)
-        {
-            var rsp = new HttpResponseDto();
-
-            PopulateResponseDto(rsp, rspMsg);
-
-            if (onFailure != null)
-            {
-                if (!rspMsg.IsSuccessStatusCode)
-                {
-                    await onFailure(rspMsg, cancellationToken);
-                }
-            }
-
-            return rsp;
-        }
-
-        private async ValueTask<HttpResponseDto<T>> BuildResponseDto<T>(HttpResponseMessage rspMsg, CancellationToken cancellationToken)
-        {
-            var rsp = new HttpResponseDto<T>();
-
-            PopulateResponseDto(rsp, rspMsg);
-
-            if (rspMsg.IsSuccessStatusCode)
-            {
-                rsp.Content = await ReadContentAsync<T>(rspMsg, cancellationToken);
-            }
-            else
-            {
-                if(onFailure != null)
-                {
-                    await onFailure(rspMsg, cancellationToken);
-                }
-            }
-
-            return rsp;
-        }
-
-        public async Task<IHttpResponse> SendAsync(HttpMethod method, CancellationToken cancellationToken)
-        {
-            using var rsp = await this.SendRequestAsync(method, cancellationToken);
-
-            return await BuildResponseDto(rsp, cancellationToken);
-        }
-
-        public async Task<IHttpResponse<TOutput>> SendAsync<TOutput>(HttpMethod method, CancellationToken cancellationToken)
-        {
-            using var rsp = await this.SendRequestAsync(method, cancellationToken);
-
-            return await BuildResponseDto<TOutput>(rsp, cancellationToken);
-        }
-
-        public async Task<IHttpResponse> SendAsync<TInput>(HttpMethod method, TInput content, string contentType, CancellationToken cancellationToken)
-        {
-            using (var streamContent = await BuildContent(content, contentType, cancellationToken))
-            {
-                using var rsp = await this.SendRequestAsync(method, streamContent, cancellationToken);
-                return await BuildResponseDto(rsp, cancellationToken);
-            }
-        }
-
-        public async Task<IHttpResponse<TOutput>> SendAsync<TInput, TOutput>(HttpMethod method, TInput content, string contentType, CancellationToken cancellationToken)
-        {
-            using var streamContent = await BuildContent(content, contentType, cancellationToken);
-
-            using var rsp = await this.SendRequestAsync(method, streamContent, cancellationToken);
-
-            return await BuildResponseDto<TOutput>(rsp, cancellationToken);
-        }
-
-        private async ValueTask<StreamContent> BuildContent<TInput>(TInput input, string contentType, CancellationToken cancellationToken)
-        {
-            contentType = contentType ?? ContentTypeJson;
-
-            var serializer = AppliedSeriaizer(contentType);
-
-            var ms = new MemoryStream();
-
-            await serializer.SerializeAsync(ms, input, cancellationToken);
-
-            var streamContent = new StreamContent(ms);
-
-            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
-
-            return streamContent;
+            return result;
         }
 
         public Task<HttpResponseMessage> SendRequestAsync(HttpMethod method, CancellationToken cancellationToken)
