@@ -8,6 +8,7 @@ namespace Bolt.FluentHttpClient
     public class FluentHttpClientSetupOptions
     {
         public bool UseDefaultSerializer { get; set; } = true;
+        public HttpContentSerializerSettings HttpContentSerializerSettings { get; set; }
     }
 
     public static class IocSetup
@@ -28,6 +29,7 @@ namespace Bolt.FluentHttpClient
 
             if(options.UseDefaultSerializer)
             {
+                sc.AddSingleton(options.HttpContentSerializerSettings ?? new HttpContentSerializerSettings());
                 sc.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpContentSerializer, HttpContentJsonSerializer>());
             }
 

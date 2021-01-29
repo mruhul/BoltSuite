@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -6,8 +7,39 @@ using System.Threading.Tasks;
 
 namespace Bolt.FluentHttpClient
 {
-    public class HttpContentJsonSerializer : IHttpContentSerializer
+    public class HttpContentSerializerSettings
     {
+        public bool UseCamelCaseNaming { get; set; }
+        public bool ProcessDictionaryKeys { get; set; }
+        public bool IgnoreNull { get; set; }
+        public bool UseStringEnumConverter { get; set; }
+        public bool Indented { get; set; }
+    }
+
+    internal sealed class HttpContentJsonSerializer : IHttpContentSerializer
+    {
+        private readonly JsonSerializerSettings settings = new JsonSerializerSettings();
+
+        public HttpContentJsonSerializer(HttpContentSerializerSettings settings)
+        {
+            this.settings.Formatting = settings.Indented ? Formatting.Indented : Formatting.None;
+
+            if (settings.UseCamelCaseNaming)
+            {
+                this.settings.ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy(processDictionaryKeys: settings.ProcessDictionaryKeys, overrideSpecifiedNames: true)
+                };
+            }
+
+            this.settings.NullValueHandling = settings.IgnoreNull ? NullValueHandling.Ignore : NullValueHandling.Include;
+            
+            if(settings.UseStringEnumConverter)
+            {
+                this.settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+            }
+        }
+
         public T Deserialize<T>(string value)
         {
             if (value == null) return default;
@@ -35,7 +67,7 @@ namespace Bolt.FluentHttpClient
             using (var sw = new StreamWriter(stream, new UTF8Encoding(false), 1024, true))
             {
                 using var jw = new JsonTextWriter(sw) { Formatting = Formatting.None };
-                JsonSerializer.Create().Serialize(jw, value);
+                JsonSerializer.Create(settings).Serialize(jw, value);
                 await jw.FlushAsync(cancellationToken).ConfigureAwait(false);
             }
 
