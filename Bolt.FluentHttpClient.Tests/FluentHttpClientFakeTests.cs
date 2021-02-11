@@ -15,8 +15,7 @@ namespace Bolt.FluentHttpClient.Tests
             var sc = new ServiceCollection();
 
             sc.AddFluentHttpClient()
-                .AddDefaultHttpHandlers()
-                .AddFakeHttpHandler();
+                .AddDefaultHttpHandlers();
 
             sc.AddFakeHttpClientWrapper();
 
