@@ -9,4 +9,10 @@ namespace Bolt.FluentHttpClient
         ValueTask Filter(HttpRequestMessage msg, CancellationToken cancellationToken);
         ValueTask Filter(HttpResponseMessage msg, CancellationToken cancellationToken);
     }
+
+    public abstract class HttpClientRequestFilter : IHttpClientRequestFilter
+    {
+        public virtual ValueTask Filter(HttpRequestMessage msg, CancellationToken cancellationToken) { return new ValueTask(); }
+        public virtual ValueTask Filter(HttpResponseMessage msg, CancellationToken cancellationToken) { return new ValueTask(); }
+    }
 }

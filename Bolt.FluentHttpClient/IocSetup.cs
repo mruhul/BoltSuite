@@ -23,9 +23,10 @@ namespace Bolt.FluentHttpClient
             sc.AddLogging();
             sc.TryAddTransient<HttpRetryHandler>();
             sc.TryAddTransient<HttpTimeoutHandler>();
-            sc.TryAddTransient<HttpRequestFilterHandler>();
             sc.TryAddTransient<IFluentHttpClient, FluentHttp>();
             sc.TryAddTransient<ITypedHttpClient, TypedHttpClient>();
+            
+            
 
             if(options.UseDefaultSerializer)
             {
@@ -36,6 +37,7 @@ namespace Bolt.FluentHttpClient
             sc.TryAddTransient(x => x.GetService<IHttpClientFactory>().CreateClient(defaultHttpClientName));
 
             sc.TryAddTransient<IHttpClientWrapper, HttpClientWrapper>();
+            sc.TryAddTransient<HttpClientRequestSender>();
 
             return sc.AddHttpClient(defaultHttpClientName);
         }
@@ -52,7 +54,6 @@ namespace Bolt.FluentHttpClient
             options = options ?? new FluentHttpClientSetupOptions();
 
             var result = builder
-                .AddHttpMessageHandler<HttpRequestFilterHandler>()
                 .AddHttpMessageHandler<HttpRetryHandler>()
                 .AddHttpMessageHandler<HttpTimeoutHandler>();
 

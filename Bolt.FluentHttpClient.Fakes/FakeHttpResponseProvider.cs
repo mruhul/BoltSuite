@@ -9,17 +9,25 @@ namespace Bolt.FluentHttpClient.Fakes
     {
         void AddFakeResponse(Func<HttpRequestMessage, HttpResponseMessage> fakes);
         Task<HttpResponseMessage> TryGetFakeResponseFor(HttpRequestMessage request);
+        void ClearFakes();
     }
 
     internal sealed class FakeHttpResponseProvider : IFakeResponseProvider
     {
-
         private ConcurrentBag<Func<HttpRequestMessage, HttpResponseMessage>> fakes
             = new ConcurrentBag<Func<HttpRequestMessage, HttpResponseMessage>>();
 
         public void AddFakeResponse(Func<HttpRequestMessage, HttpResponseMessage> fake)
         {
             fakes.Add(fake);
+        }
+
+        public void ClearFakes()
+        {
+            while(!fakes.IsEmpty)
+            {
+                fakes.TryTake(out var _);
+            }
         }
 
         public Task<HttpResponseMessage> TryGetFakeResponseFor(HttpRequestMessage request)

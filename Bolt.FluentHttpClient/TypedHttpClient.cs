@@ -33,14 +33,14 @@ namespace Bolt.FluentHttpClient
 
     internal sealed class TypedHttpClient : ITypedHttpClient
     {
-        private readonly IHttpClientWrapper httpClientWrapper;
+        private readonly HttpClientRequestSender httpRequestSender;
         private readonly IEnumerable<IHttpContentSerializer> serializers;
         private static readonly Type NoneType = typeof(None);
 
-        public TypedHttpClient(IHttpClientWrapper httpClientWrapper,
+        public TypedHttpClient(HttpClientRequestSender httpRequestSender,
             IEnumerable<IHttpContentSerializer> serializers)
         {
-            this.httpClientWrapper = httpClientWrapper;
+            this.httpRequestSender = httpRequestSender;
             this.serializers = serializers;
         }
 
@@ -101,7 +101,7 @@ namespace Bolt.FluentHttpClient
             HttpContent content, 
             CancellationToken cancellationToken)
         {
-            return httpClientWrapper.SendAsync(client, BuildMessage(request, content), cancellationToken);
+            return httpRequestSender.SendAsync(client, BuildMessage(request, content), cancellationToken);
         }
 
         private async ValueTask<StreamContent> BuildContent<TInput>(TInput input, string contentType, CancellationToken cancellationToken)

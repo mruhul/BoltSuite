@@ -9,7 +9,7 @@ namespace Bolt.FluentHttpClient
         Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request, CancellationToken cancellation);
     }
 
-    public class HttpClientWrapper : IHttpClientWrapper
+    internal sealed class HttpClientWrapper : IHttpClientWrapper
     {
         public Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request, CancellationToken cancellation)
         {
