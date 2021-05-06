@@ -25,7 +25,10 @@ namespace Bolt.RequestBus.Widgets
         {
             var result = await this.Handle(context, request);
 
-            return Response.Succeed(result);
+            if (StatusCodeHelper.IsSuccessful(result?.StatusCode))
+                return Response.Succeed(result);
+
+            return Response.Failed(null, result);
         }
 
         protected abstract Task<IWidgetResponse> Handle(IRequestBusContext context, TRequest request);
@@ -42,7 +45,10 @@ namespace Bolt.RequestBus.Widgets
         {
             var result = await this.Handle(context, request);
 
-            return Response.Succeed(result);
+            if (StatusCodeHelper.IsSuccessful(result?.StatusCode))
+                return Response.Succeed(result);
+
+            return Response.Failed(null, result);
         }
 
         protected abstract Task<IWidgetResponse> Handle(IRequestBusContext context, TRequest request);
