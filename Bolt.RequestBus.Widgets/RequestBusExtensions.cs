@@ -18,20 +18,13 @@ namespace Bolt.RequestBus.Widgets
             return BuildWidgetGroupResponse<TRequest>(widgetsRsp);
         }
 
-        private static bool IsSuccessStatusCode(int? statusCode)
-        {
-            return statusCode == null 
-                || statusCode == 0 
-                || (statusCode.Value >= 200 && statusCode.Value <= 299);
-        }
-
         private static IWidgetGroupResponse BuildWidgetGroupResponse<TRequest>(IResponseCollection<IWidgetResponse> rsp)
         {
             var result = new WidgetGroupResponse();
 
             if (rsp.MainResponse != null)
             {
-                if (!rsp.MainResponse.IsSucceed || !IsSuccessStatusCode(rsp.MainResponse.Value?.StatusCode))
+                if (!rsp.MainResponse.IsSucceed || !StatusCodeHelper.IsSuccessful(rsp.MainResponse.Value?.StatusCode))
                 {
                     result.StatusCode = rsp.MainResponse.Value?.StatusCode ?? 400;
                     result.Errors = rsp.MainResponse.Errors;
