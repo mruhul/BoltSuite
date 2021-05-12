@@ -37,23 +37,23 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class ResponseHandler : ResponseHandlerAsync<TestResult>
         {
-            protected override Task<TestResult> Handle(IRequestBusContext context)
+            protected override async Task<Response<TestResult>> Handle(IRequestBusContext context)
             {
-                return Task.FromResult(new TestResult
+                return new TestResult
                 {
                     Message = "Hello World!"
-                });
+                };
             }
         }
         
         class ResponseHandlerNotApplicable : ResponseHandlerAsync<TestResult>
         {
-            protected override Task<TestResult> Handle(IRequestBusContext context)
+            protected override async Task<Response<TestResult>> Handle(IRequestBusContext context)
             {
-                return Task.FromResult(new TestResult
+                return new TestResult
                 {
                     Message = "Shouldn't call"
-                });
+                };
             }
 
             protected override bool IsApplicable(IRequestBusContext context) => false;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Bolt.RequestBus.Tests.Infra;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -77,9 +78,10 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class TestRequestContextHandler : RequestHandler<TestRequestContext>
         {
-            protected override void Handle(IRequestBusContext context, TestRequestContext request)
+            protected override Response Handle(IRequestBusContext context, TestRequestContext request)
             {
                 request.MsgInContext = context.GetOrDefault<string>("message");
+                return true;
             }
         }
 
@@ -90,20 +92,21 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class TestRequestHandler : RequestHandler<TestRequest>
         {
-            protected override void Handle(IRequestBusContext context, TestRequest request)
+            protected override Response Handle(IRequestBusContext context, TestRequest request)
             {
                 request.HandlersExecuted.Add(this.GetType().Name);
+                return true;
             }
         }
 
         class TestNoApplicableRequestHandler : RequestHandler<TestRequest>
         {
-            protected override void Handle(IRequestBusContext context, TestRequest request)
+            public override bool IsApplicable(IRequestBusContext context, TestRequest request) => false;
+            protected override Response Handle(IRequestBusContext context, TestRequest request)
             {
                 request.HandlersExecuted.Add(this.GetType().Name);
+                return true;
             }
-
-            public override bool IsApplicable(IRequestBusContext context, TestRequest request) => false;
         }
     }
 }

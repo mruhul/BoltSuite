@@ -6,28 +6,28 @@ namespace Bolt.RequestBus.Impl
 {
     internal sealed partial class RequestBus
     {
-        public IResponse<TResult> Response<TResult>()
+        public Response<TResult> Response<TResult>()
         {
             return Response<None, TResult>(None.Instance, ignoreNoHandler: false);
         }
 
-        public IResponse<TResult> TryResponse<TResult>()
+        public Response<TResult> TryResponse<TResult>()
         {
             return Response<None, TResult>(None.Instance, ignoreNoHandler: true);
         }
 
-        public Task<IResponse<TResult>> ResponseAsync<TResult>()
+        public Task<Response<TResult>> ResponseAsync<TResult>()
         {
             return ResponseAsync<None, TResult>(None.Instance, ignoreNoHandler: false);
         }
 
-        public Task<IResponse<TResult>> TryResponseAsync<TResult>()
+        public Task<Response<TResult>> TryResponseAsync<TResult>()
         {
             return ResponseAsync<None, TResult>(None.Instance, ignoreNoHandler: true);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IResponse<TResult> Response<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
+        private Response<TResult> Response<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
         {
             var handlers = _sp.GetServices<IResponseHandler<None, TResult>>();
 
@@ -46,7 +46,7 @@ namespace Bolt.RequestBus.Impl
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private async Task<IResponse<TResult>> ResponseAsync<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
+        private async Task<Response<TResult>> ResponseAsync<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
         {
             var handlers = _sp.GetServices<IResponseHandlerAsync<None, TResult>>();
 

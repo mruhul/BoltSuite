@@ -7,7 +7,7 @@ namespace Bolt.RequestBus.Widgets
     public interface IWidgetGroupResponse
     {
         int StatusCode { get; }
-        IEnumerable<IError> Errors { get; }
+        IEnumerable<Error> Errors { get; }
         IRedirectAction RedirectAction { get; }
         IEnumerable<IWidgetUnitResponse> Widgets { get; }
     }
@@ -16,7 +16,7 @@ namespace Bolt.RequestBus.Widgets
     {
         private readonly List<IWidgetUnitResponse> _response = new List<IWidgetUnitResponse>(); 
         public int StatusCode { get; set; }
-        public IEnumerable<IError> Errors { get; set; } = Enumerable.Empty<IError>();
+        public IEnumerable<Error> Errors { get; set; } = Enumerable.Empty<Error>();
         
         public IRedirectAction RedirectAction { get; set; }
         public IEnumerable<IWidgetUnitResponse> Widgets => _response;

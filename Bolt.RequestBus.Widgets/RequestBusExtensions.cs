@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Bolt.RequestBus.Widgets
@@ -18,38 +20,38 @@ namespace Bolt.RequestBus.Widgets
             return BuildWidgetGroupResponse<TRequest>(widgetsRsp);
         }
 
-        private static IWidgetGroupResponse BuildWidgetGroupResponse<TRequest>(IResponseCollection<IWidgetResponse> rsp)
+        private static IWidgetGroupResponse BuildWidgetGroupResponse<TRequest>(ResponseCollection<IWidgetResponse> rsp)
         {
             var result = new WidgetGroupResponse();
-
-            if (rsp.MainResponse != null)
+            var mainRsp = rsp.MainResponse();
+            if (mainRsp != null)
             {
-                if (!rsp.MainResponse.IsSucceed || !StatusCodeHelper.IsSuccessful(rsp.MainResponse.Value?.StatusCode))
+                if (!mainRsp.IsSucceed || !StatusCodeHelper.IsSuccessful(mainRsp.StatusCode))
                 {
-                    result.StatusCode = rsp.MainResponse.Value?.StatusCode ?? 400;
-                    result.Errors = rsp.MainResponse.Errors;
+                    result.StatusCode = mainRsp.StatusCode ?? 400;
+                    result.Errors = mainRsp.Errors;
                     return result;
                 }
 
-                if (!string.IsNullOrWhiteSpace(rsp.MainResponse.Value?.RedirectAction?.Url))
+                if (!string.IsNullOrWhiteSpace(mainRsp.Value?.RedirectAction?.Url))
                 {
-                    result.StatusCode = rsp.MainResponse.Value.StatusCode;
-                    result.RedirectAction = rsp.MainResponse.Value.RedirectAction;
+                    result.StatusCode = mainRsp.StatusCode ?? 302;
+                    result.RedirectAction = mainRsp.Value.RedirectAction;
                     return result;
                 }
 
-                result.StatusCode = rsp.MainResponse.Value?.StatusCode ?? 200;
+                result.StatusCode = mainRsp.StatusCode ?? 200;
                 
-                result.AddResponse(BuildWidgetUnitResponse(rsp.MainResponse));
+                result.AddResponse(BuildWidgetUnitResponse(mainRsp));
             }
             else
             {
                 result.StatusCode = 200;
             }
 
-            if (rsp.OtherResponses == null) return result;
-
-            foreach (var otherResponse in rsp.OtherResponses)
+            var otherRsp = rsp.OtherResponses();
+            
+            foreach (var otherResponse in otherRsp)
             {
                 result.AddResponse(BuildWidgetUnitResponse(otherResponse));
             }
@@ -57,7 +59,7 @@ namespace Bolt.RequestBus.Widgets
             return result;
         }
 
-        private static IWidgetUnitResponse BuildWidgetUnitResponse(IResponse<IWidgetResponse> rsp)
+        private static IWidgetUnitResponse BuildWidgetUnitResponse(Response<IWidgetResponse> rsp)
         {
             return new WidgetUnitResponse
             {
@@ -65,7 +67,7 @@ namespace Bolt.RequestBus.Widgets
                 Name = rsp.Value?.Name,
                 Type = rsp.Value?.Type,
                 Errors = rsp.Errors,
-                StatusCode = rsp.Value?.StatusCode ?? 200,
+                StatusCode = rsp?.StatusCode ?? 200,
                 DisplayOrder = rsp.Value?.DisplayOrder ?? 0
             };
         }

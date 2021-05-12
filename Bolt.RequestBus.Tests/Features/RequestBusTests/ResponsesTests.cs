@@ -27,13 +27,13 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
             
             var rsp = sut.Responses<TestRequest, TestResult>(request);
             
-            rsp.MainResponse.IsSucceed.ShouldBe(true);
-            rsp.MainResponse.Value.ShouldNotBeNull();
-            rsp.MainResponse.Value.Message.ShouldBe($"{request.Name} : handled by {nameof(MainResponseHandler)}");
-            rsp.OtherResponses.Count().ShouldBe(2);
-            rsp.OtherResponses.ShouldContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(DependentResponseHandler)}");
-            rsp.OtherResponses.ShouldContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(IndependentResponseHandler)}");
-            rsp.OtherResponses.ShouldNotContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(DependentNonApplicableResponseHandler)}");
+            rsp.MainResponse().IsSucceed.ShouldBe(true);
+            rsp.MainResponse().Value.ShouldNotBeNull();
+            rsp.MainResponse().Value.Message.ShouldBe($"{request.Name} : handled by {nameof(MainResponseHandler)}");
+            rsp.OtherResponses().Count().ShouldBe(2);
+            rsp.OtherResponses().ShouldContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(DependentResponseHandler)}");
+            rsp.OtherResponses().ShouldContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(IndependentResponseHandler)}");
+            rsp.OtherResponses().ShouldNotContain(x => x.Value.Message == $"{request.Name} : handled by {nameof(DependentNonApplicableResponseHandler)}");
             
         }
 
@@ -55,8 +55,8 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
             
             var rsp = sut.Responses<TestRequest, TestResult>(request);
             
-            rsp.MainResponse.IsSucceed.ShouldBe(false);
-            rsp.MainResponse.Errors.Count().ShouldBe(0);
+            rsp.MainResponse().IsSucceed.ShouldBe(false);
+            rsp.MainResponse().Errors.Count().ShouldBe(0);
         }
 
         [Fact]
@@ -76,9 +76,9 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
             
             var rsp = sut.Responses<TestRequest, TestResult>(request);
             
-            rsp.MainResponse.IsSucceed.ShouldBe(true);
-            rsp.MainResponse.Value.Message.ShouldBe($"{request.Name} : handled by {nameof(MainResponseHandler)}");
-            rsp.MainResponse.Errors.Count().ShouldBe(0);
+            rsp.MainResponse().IsSucceed.ShouldBe(true);
+            rsp.MainResponse().Value.Message.ShouldBe($"{request.Name} : handled by {nameof(MainResponseHandler)}");
+            rsp.MainResponse().Errors.Count().ShouldBe(0);
         }
 
         [Fact]
@@ -99,9 +99,9 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
             var rsp = sut.Responses<TestRequest, TestResult>(request);
             
-            rsp.MainResponse.IsSucceed.ShouldBe(true);
-            rsp.OtherResponses.Count().ShouldBe(2);
-            rsp.OtherResponses.ShouldContain(x => 
+            rsp.MainResponse().IsSucceed.ShouldBe(true);
+            rsp.OtherResponses().Count().ShouldBe(2);
+            rsp.OtherResponses().ShouldContain(x => 
                 x.Value.Message ==  $"{request.Name} filtered by {nameof(ResponseFilter)}");
         }
 
@@ -115,17 +115,17 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
             var rsp = sut.Responses<TestRequest, TestResult>(new TestRequest());
 
-            rsp.MainResponse.ShouldNotBeNull();
-            rsp.MainResponse.IsSucceed.ShouldBeFalse();
-            rsp.MainResponse.Errors.ShouldContain(x => x.Message == "Name is required.");
+            rsp.MainResponse().ShouldNotBeNull();
+            rsp.MainResponse().IsSucceed.ShouldBeFalse();
+            rsp.MainResponse().Errors.ShouldContain(x => x.Message == "Name is required.");
         }
 
         public class ResponseFilter : ResponseFilter<TestRequest, TestResult>
         {
             protected override void Filter(IRequestBusContext context, TestRequest request, 
-                IResponseCollection<TestResult> rspCollection)
+                ResponseCollection<TestResult> rspCollection)
             {
-                rspCollection.AddResponse(Response.Succeed(new TestResult
+                rspCollection.AddResponse(Response.Ok(new TestResult
                 {
                     Message = $"{request.Name} filtered by {this.GetType().Name}"
                 }));
@@ -135,9 +135,9 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         public class ResponseFilterNotApplicable : ResponseFilter<TestRequest, TestResult>
         {
             protected override void Filter(IRequestBusContext context, TestRequest request, 
-                IResponseCollection<TestResult> rspCollection)
+                ResponseCollection<TestResult> rspCollection)
             {
-                rspCollection.AddResponse(Response.Succeed(new TestResult
+                rspCollection.AddResponse(Response.Ok(new TestResult
                 {
                     Message = $"{request.Name} filtered by {this.GetType().Name}"
                 }));
@@ -148,7 +148,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         public class TestRequestValidator : RequestValidator<TestRequest>
         {
-            public override IEnumerable<IError> Validate(IRequestBusContext context, TestRequest request)
+            public override IEnumerable<Error> Validate(IRequestBusContext context, TestRequest request)
             {
                 if (string.IsNullOrWhiteSpace(request.Name)) yield return Error.Create("Name is required.", "Name");
             }
@@ -156,7 +156,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         public class MainFailedResponseHandler : IResponseHandler<TestRequest, TestResult>
         {
-            public IResponse<TestResult> Handle(IRequestBusContext context, TestRequest request)
+            public Response<TestResult> Handle(IRequestBusContext context, TestRequest request)
             {
                 return Response.Failed<TestResult>();
             }
@@ -168,7 +168,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         public class MainResponseHandler : ResponseHandler<TestRequest, TestResult>
         {
-            protected override TestResult Handle(IRequestBusContext context, TestRequest request)
+            public override Response<TestResult> Handle(IRequestBusContext context, TestRequest request)
             {
                 return new TestResult
                 {
@@ -181,7 +181,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         public class IndependentResponseHandler : ResponseHandler<TestRequest, TestResult>
         {
-            protected override TestResult Handle(IRequestBusContext context, TestRequest request)
+            public override Response<TestResult> Handle(IRequestBusContext context, TestRequest request)
             {
                 return new TestResult
                 {
@@ -194,7 +194,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         public class DependentResponseHandler : ResponseHandler<TestRequest, TestResult>
         {
-            protected override TestResult Handle(IRequestBusContext context, TestRequest request)
+            public override Response<TestResult> Handle(IRequestBusContext context, TestRequest request)
             {
                 return new TestResult
                 {
@@ -205,7 +205,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         class DependentNonApplicableResponseHandler : ResponseHandler<TestRequest, TestResult>
         {
-            protected override TestResult Handle(IRequestBusContext context, TestRequest request)
+            public override Response<TestResult> Handle(IRequestBusContext context, TestRequest request)
             {
                 return new TestResult
                 {
@@ -218,7 +218,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         public class DependentHandlerWithException : ResponseHandler<TestRequest,TestResult>
         {
-            protected override TestResult Handle(IRequestBusContext context, TestRequest request)
+            public override Response<TestResult> Handle(IRequestBusContext context, TestRequest request)
             {
                 throw new System.NotImplementedException();
             }
@@ -226,7 +226,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         public class InDependentHandlerWithException : ResponseHandler<TestRequest,TestResult>
         {
-            protected override TestResult Handle(IRequestBusContext context, TestRequest request)
+            public override Response<TestResult> Handle(IRequestBusContext context, TestRequest request)
             {
                 throw new System.NotImplementedException();
             }

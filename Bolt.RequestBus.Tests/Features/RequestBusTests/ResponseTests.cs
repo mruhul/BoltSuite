@@ -36,7 +36,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class ResponseHandler : ResponseHandler<TestResult>
         {
-            protected override TestResult Handle(IRequestBusContext context)
+            public override Response<TestResult> Handle(IRequestBusContext context, None request)
             {
                 return new TestResult
                 {
@@ -47,7 +47,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
         
         class ResponseHandlerNotApplicable : ResponseHandler<TestResult>
         {
-            protected override TestResult Handle(IRequestBusContext context)
+            public override Response<TestResult> Handle(IRequestBusContext context, None request)
             {
                 return new TestResult
                 {

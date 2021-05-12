@@ -5,7 +5,6 @@ namespace Bolt.RequestBus.Widgets
 {
     public interface IWidgetResponse
     {
-        int StatusCode { get; }
         IRedirectAction RedirectAction { get; }
         
         string Name { get; }

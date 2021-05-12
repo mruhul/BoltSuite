@@ -1,31 +1,31 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Bolt.RequestBus
 {
-    public interface IResponseCollection<TResult>
+    public record ResponseCollection<TValue>
     {
-        IResponse<TResult> MainResponse { get; }
-        IEnumerable<IResponse<TResult>> OtherResponses { get; }
-        void AddResponse(IResponse<TResult> response);
+        public ICollection<ResponseUnit<TValue>> Responses { get; init; }
+
+        public Response<TValue> MainResponse()
+            => Responses.FirstOrDefault(x => x.IsMainResponse)?.Response;
+
+        public IEnumerable<Response<TValue>> OtherResponses()
+            => Responses.Where(x => !x.IsMainResponse).Select(x => x.Response) ?? Enumerable.Empty<Response<TValue>>();
+
+        public void AddResponse(Response<TValue> response, bool isMainResponse = false)
+        {
+            Responses.Add(new ResponseUnit<TValue>
+            {
+                IsMainResponse = isMainResponse,
+                Response = response
+            });
+        }
     }
 
-    internal sealed class ResponseCollection<TResult> : IResponseCollection<TResult>
+    public record ResponseUnit<TValue>
     {
-        private List<IResponse<TResult>> _responses;
-        
-        public IResponse<TResult> MainResponse { get; set; }
-        public IEnumerable<IResponse<TResult>> OtherResponses => _responses ?? Enumerable.Empty<IResponse<TResult>>();
-
-        public void AddResponse(IResponse<TResult> rsp)
-        {
-            if(rsp == null) return;
-            
-            _responses ??= new List<IResponse<TResult>>();
-
-            _responses.Add(rsp);
-        }
+        public Response<TValue> Response { get; init; }
+        public bool IsMainResponse { get; init; }
     }
 }

@@ -93,30 +93,30 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class RequestValidatorForShouldValidateRequest : RequestValidatorAsync<RequestForShouldValidateRequest>
         {
-            public override Task<IEnumerable<IError>> Validate(IRequestBusContext context,
+            public override Task<IEnumerable<Error>> Validate(IRequestBusContext context,
                 RequestForShouldValidateRequest request)
             {
-                var list = new List<IError>();
+                var list = new List<Error>();
 
                 if (string.IsNullOrWhiteSpace(request.Name))
                     list.Add(Error.Create("Name is required.", nameof(request.Name)));
 
-                return Task.FromResult((IEnumerable<IError>) list);
+                return Task.FromResult((IEnumerable<Error>) list);
             }
         }
 
         class RequestValidatorNotApplicableForShouldValidateRequest : RequestValidatorAsync<
             RequestForShouldValidateRequest>
         {
-            public override Task<IEnumerable<IError>> Validate(IRequestBusContext context,
+            public override Task<IEnumerable<Error>> Validate(IRequestBusContext context,
                 RequestForShouldValidateRequest request)
             {
-                var list = new List<IError>();
+                var list = new List<Error>();
 
                 if (string.IsNullOrWhiteSpace(request.Name))
                     list.Add(Error.Create("Name is required. Please enter name.", nameof(request.Name)));
 
-                return Task.FromResult((IEnumerable<IError>) list);
+                return Task.FromResult((IEnumerable<Error>) list);
             }
 
             public override bool IsApplicable(IRequestBusContext context, RequestForShouldValidateRequest request)
@@ -125,10 +125,10 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class RequestHandlerForShouldValidateRequest : RequestHandlerAsync<RequestForShouldValidateRequest>
         {
-            protected override Task Handle(IRequestBusContext context, RequestForShouldValidateRequest request)
+            protected override async Task<Response> Handle(IRequestBusContext context, RequestForShouldValidateRequest request)
             {
                 request.Name = "Surprise!";
-                return Task.CompletedTask;
+                return Response.Ok();
             }
         }
 
@@ -147,10 +147,10 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class TestRequestContextHandler : RequestHandlerAsync<TestRequestContext>
         {
-            protected override Task Handle(IRequestBusContext context, TestRequestContext request)
+            protected override async Task<Response> Handle(IRequestBusContext context, TestRequestContext request)
             {
                 request.MsgInContext = context.GetOrDefault<string>("message");
-                return Task.CompletedTask;
+                return true;
             }
         }
 
@@ -161,19 +161,19 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class TestRequestHandler : RequestHandlerAsync<TestRequest>
         {
-            protected override Task Handle(IRequestBusContext context, TestRequest request)
+            protected override async Task<Response> Handle(IRequestBusContext context, TestRequest request)
             {
                 request.HandlersExecuted.Add(this.GetType().Name);
-                return Task.CompletedTask;
+                return true;
             }
         }
 
         class TestNoApplicableRequestHandler : RequestHandlerAsync<TestRequest>
         {
-            protected override Task Handle(IRequestBusContext context, TestRequest request)
+            protected override async Task<Response> Handle(IRequestBusContext context, TestRequest request)
             {
                 request.HandlersExecuted.Add(this.GetType().Name);
-                return Task.CompletedTask;
+                return true;
             }
 
             public override bool IsApplicable(IRequestBusContext context, TestRequest request) => false;

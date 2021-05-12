@@ -74,14 +74,14 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class TestContextHandler : RequestHandlerAsync<TestRequest, TestResponse>
         {
-            protected override Task<TestResponse> Handle(IRequestBusContext context, TestRequest request)
+            public override async Task<Response<TestResponse>> Handle(IRequestBusContext context, TestRequest request)
             {
-                return Task.FromResult(new TestResponse
+                return new TestResponse
                 {
                     HandlerExecuted = this.GetType().Name,
                     Message =
                         $"tenant:{context.GetOrDefault<string>("current-tenant")} user:{context.GetOrDefault<string>("user-name")}"
-                });
+                };
             }
         }
 
@@ -113,23 +113,23 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class TestRequestHandler : RequestHandlerAsync<TestRequest, TestResponse>
         {
-            protected override Task<TestResponse> Handle(IRequestBusContext context, TestRequest request)
+            public override async Task<Response<TestResponse>> Handle(IRequestBusContext context, TestRequest request)
             {
-                return Task.FromResult(new TestResponse
+                return new TestResponse
                 {
                     HandlerExecuted = this.GetType().Name
-                });
+                };
             }
         }
 
         class TestRequestNotApplicableHandler : RequestHandlerAsync<TestRequest, TestResponse>
         {
-            protected override Task<TestResponse> Handle(IRequestBusContext context, TestRequest request)
+            public override async Task<Response<TestResponse>> Handle(IRequestBusContext context, TestRequest request)
             {
-                return Task.FromResult(new TestResponse
+                return new TestResponse
                 {
                     HandlerExecuted = this.GetType().Name
-                });
+                };
             }
 
             public override bool IsApplicable(IRequestBusContext context, TestRequest request) => false;
@@ -142,39 +142,39 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class TestValidationRequestHandler : RequestHandlerAsync<TestValidationRequest, string>
         {
-            protected override Task<string> Handle(IRequestBusContext context, TestValidationRequest request)
+            public override async Task<Response<string>> Handle(IRequestBusContext context, TestValidationRequest request)
             {
-                return Task.FromResult($"Hello {request.Name}!");
+                return $"Hello {request.Name}!";
             }
         }
 
         class TestRequestValidator : RequestValidatorAsync<TestValidationRequest>
         {
-            public override Task<IEnumerable<IError>> Validate(IRequestBusContext context,
+            public override Task<IEnumerable<Error>> Validate(IRequestBusContext context,
                 TestValidationRequest request)
             {
-                var result = new List<IError>();
+                var result = new List<Error>();
 
                 if (string.IsNullOrWhiteSpace(request.Name))
                     result.Add(
                         Error.Create("Name is required.", nameof(request.Name)));
 
-                return Task.FromResult((IEnumerable<IError>) result);
+                return Task.FromResult((IEnumerable<Error>) result);
             }
         }
 
         class TestNotApplicableRequestValidator : RequestValidatorAsync<TestValidationRequest>
         {
-            public override Task<IEnumerable<IError>> Validate(IRequestBusContext context,
+            public override Task<IEnumerable<Error>> Validate(IRequestBusContext context,
                 TestValidationRequest request)
             {
-                var result = new List<IError>();
+                var result = new List<Error>();
 
                 if (string.IsNullOrWhiteSpace(request.Name))
                     result.Add(
                         Error.Create("Name is required. Please enter your name.", nameof(request.Name)));
 
-                return Task.FromResult((IEnumerable<IError>) result);
+                return Task.FromResult((IEnumerable<Error>) result);
             }
 
             public override bool IsApplicable(IRequestBusContext context, TestValidationRequest request) => false;

@@ -46,8 +46,8 @@ namespace Bolt.RequestBus
         /// <param name="request"></param>
         /// <typeparam name="TRequest"></typeparam>
         /// <exception cref="NoHandlerAvailable"></exception>
-        /// <returns><see cref="IResponse"/></returns>
-        IResponse Send<TRequest>(TRequest request);
+        /// <returns><see cref="Response"/></returns>
+        Response Send<TRequest>(TRequest request);
 
         /// <summary>
         /// Executes first applicable handler for the request of type TRequest. You need to register
@@ -69,7 +69,7 @@ namespace Bolt.RequestBus
         /// <param name="request"></param>
         /// <typeparam name="TRequest"></typeparam>
         /// <returns><see cref="IResponse"/>></returns>
-        IResponse TrySend<TRequest>(TRequest request);
+        Response TrySend<TRequest>(TRequest request);
 
         /// <summary>
         /// Executes first applicable handler for the request of type TRequest. You need to register
@@ -84,7 +84,7 @@ namespace Bolt.RequestBus
         /// <typeparam name="TResult"></typeparam>
         /// <exception cref="NoHandlerAvailable"></exception>
         /// <returns>IResponse{TResult}</returns>
-        IResponse<TResult> Send<TRequest, TResult>(TRequest request);
+        Response<TResult> Send<TRequest, TResult>(TRequest request);
 
         /// <summary>
         /// Executes first applicable handler for the request of type TRequest. You need to register
@@ -98,7 +98,7 @@ namespace Bolt.RequestBus
         /// <typeparam name="TRequest"></typeparam>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>IResponse{TResult}</returns>
-        IResponse<TResult> TrySend<TRequest, TResult>(TRequest request);
+        Response<TResult> TrySend<TRequest, TResult>(TRequest request);
 
         /// <summary>
         /// Executes all applicable handlers for the event. You need to register implementations of <see cref="IEventHandler{TEvent}"/>
@@ -121,12 +121,12 @@ namespace Bolt.RequestBus
         /// Executes first applicable handler found in your ioc that implements <see cref="IRequestHandlerAsync{TRequest,None}"/>.
         /// If no applicable handler found for the request then <see cref="NoHandlerAvailable"/> exception will be thrown.
         /// Before the execution the method will also validate the request if any applicable implementations of <see cref="IRequestValidatorAsync{TRequest}"/>.
-        /// When any validation failed and instance of <see cref="IResponse"/>> will be send with collection of errors (<see cref="IError"/>).
+        /// When any validation failed and instance of <see cref="Response"/>> will be send with collection of errors (<see cref="Error"/>).
         /// </summary>
         /// <param name="request"></param>
         /// <typeparam name="TRequest"></typeparam>
         /// <returns>IResponse</returns>
-        Task<IResponse> SendAsync<TRequest>(TRequest request);
+        Task<Response> SendAsync<TRequest>(TRequest request);
 
         /// <summary>
         /// Executes first applicable handler for the request of type TRequest. You need to register
@@ -139,19 +139,19 @@ namespace Bolt.RequestBus
         /// <param name="request"></param>
         /// <typeparam name="TRequest"></typeparam>
         /// <returns>IResponse</returns>
-        Task<IResponse> TrySendAsync<TRequest>(TRequest request);
+        Task<Response> TrySendAsync<TRequest>(TRequest request);
 
         /// <summary>
         /// Executes first applicable handler found in your ioc that implements <see cref="IRequestHandlerAsync{TRequest,TResult}"/>.
         /// If no applicable handler found for the request then <see cref="NoHandlerAvailable"/> exception will be thrown.
         /// Before the execution the method will also validate the request if any applicable implementations of <see cref="IRequestValidatorAsync{TRequest}"/>.
-        /// When any validation failed and instance of <see cref="IResponse"/>> will be send with collection of errors (<see cref="IError"/>).
+        /// When any validation failed and instance of <see cref="Response"/>> will be send with collection of errors (<see cref="Error"/>).
         /// </summary>
         /// <param name="request"></param>
         /// <typeparam name="TRequest"></typeparam>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>IResponse{TResult}</returns>
-        Task<IResponse<TResult>> SendAsync<TRequest, TResult>(TRequest request);
+        Task<Response<TResult>> SendAsync<TRequest, TResult>(TRequest request);
 
         /// <summary>
         /// Executes first applicable handler for the request of type TRequest. You need to register
@@ -165,30 +165,30 @@ namespace Bolt.RequestBus
         /// <typeparam name="TRequest"></typeparam>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>IResponse{TResult}</returns>
-        Task<IResponse<TResult>> TrySendAsync<TRequest, TResult>(TRequest request);
+        Task<Response<TResult>> TrySendAsync<TRequest, TResult>(TRequest request);
 
         /// <summary>
         /// Executes first applicable handler that implements <see cref="IResponseHandler{None,TResult}"/>
-        /// and return the result as <see cref="IResponse{TResult}"/>. When no handler found the method will throw
+        /// and return the result as <see cref="Response{TResult}"/>. When no handler found the method will throw
         /// <see cref="NoHandlerAvailable"/> exception.
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <exception cref="NoHandlerAvailable"></exception>
         /// <returns>IResponse{TResult}</returns>
-        IResponse<TResult> Response<TResult>();
+        Response<TResult> Response<TResult>();
         
         /// <summary>
         /// Executes first applicable handler that implements <see cref="IResponseHandler{None,TResult}"/>
-        /// and return the result as <see cref="IResponse{TResult}"/>. When no handler found the method will return
-        /// an instance of <see cref="IResponse{TResult}"/> whose IsSucceed value will be false.
+        /// and return the result as <see cref="Response{TResult}"/>. When no handler found the method will return
+        /// an instance of <see cref="Response{TResult}"/> whose IsSucceed value will be false.
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>IResponse{TResult}</returns>
-        IResponse<TResult> TryResponse<TResult>();
+        Response<TResult> TryResponse<TResult>();
 
         /// <summary>
         /// Executes all applicable handlers that implement <see cref="IResponseHandler{None,TResult}"/>
-        /// and return all the responses as a collection of <see cref="IResponse{TResult}"/>. If main handler failed
+        /// and return all the responses as a collection of <see cref="Response{TResult}"/>. If main handler failed
         /// then the exception propagates to the caller. Otherwise the method continue executing other handlers and
         /// return responses fo the successful handlers. The collection response can be add/remove/modify using
         /// <see cref="IResponseFilter{None,TResult}"/>. When all the handler execution finished the collected result pass
@@ -197,12 +197,12 @@ namespace Bolt.RequestBus
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>IEnumerable{IResponse{TResult}}</returns>
-        IResponseCollection<TResult> Responses<TResult>();
+        ResponseCollection<TResult> Responses<TResult>();
         
         /// <summary>
         /// Validate the input of TRequest using any applicable <see cref="IRequestValidator{TRequest}"/> and when
         /// validation succeed then executes all applicable handlers that implement <see cref="IResponseHandler{TRequest,TResult}"/>
-        /// and return all the responses as a collection of <see cref="IResponse{TResult}"/>. If main handler failed
+        /// and return all the responses as a collection of <see cref="Response{TResult}"/>. If main handler failed
         /// then the exception propagates to the caller. Otherwise the method continue executing other handlers and
         /// return responses fo the successful handlers. The collection response can be add/remove/modify using
         /// <see cref="IResponseFilter{TRequest,TResult}"/>. When all the handler execution finished the collected result pass
@@ -213,7 +213,7 @@ namespace Bolt.RequestBus
         /// <typeparam name="TRequest"></typeparam>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>IEnumerable{IResponse{TResult}}</returns>
-        IResponseCollection<TResult> Responses<TRequest, TResult>(TRequest request);
+        ResponseCollection<TResult> Responses<TRequest, TResult>(TRequest request);
 
         /// <summary>
         /// Executes first applicable handler that implements <see cref="IResponseHandlerAsync{None,TResult}"/>
@@ -222,20 +222,20 @@ namespace Bolt.RequestBus
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>IResponse{TResult}</returns>
-        Task<IResponse<TResult>> ResponseAsync<TResult>();
+        Task<Response<TResult>> ResponseAsync<TResult>();
         
         /// <summary>
         /// Executes first applicable handler that implements <see cref="IResponseHandlerAsync{None,TResult}"/>
-        /// and return the result as <see cref="IResponse{TResult}"/>. When no handler found the method will return
-        /// an instance of <see cref="IResponse{TResult}"/> whose IsSucceed value will be false.
+        /// and return the result as <see cref="Response{TResult}"/>. When no handler found the method will return
+        /// an instance of <see cref="Response{TResult}"/> whose IsSucceed value will be false.
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>IResponse{TResult}</returns>
-        Task<IResponse<TResult>> TryResponseAsync<TResult>();
+        Task<Response<TResult>> TryResponseAsync<TResult>();
         
         /// <summary>
         /// Executes all applicable handlers that implement <see cref="IResponseHandlerAsync{None,TResult}"/>
-        /// and return all the responses as a collection of <see cref="IResponse{TResult}"/>. If main handler failed
+        /// and return all the responses as a collection of <see cref="Response{TResult}"/>. If main handler failed
         /// then the exception propagates to the caller. Otherwise the method continue executing other handlers and
         /// return responses fo the successful handlers. The collection response can be add/remove/modify using
         /// <see cref="IResponseFilterAsync{None,TResult}"/>. When all the handler execution finished the collected result pass
@@ -244,12 +244,12 @@ namespace Bolt.RequestBus
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>Task{IEnumerable{IResponse{TResult}}}</returns>
-        Task<IResponseCollection<TResult>> ResponsesAsync<TResult>();
+        Task<ResponseCollection<TResult>> ResponsesAsync<TResult>();
         
         /// <summary>
         /// Validate the input of TRequest using any applicable <see cref="IRequestValidatorAsync{TRequest}"/> and when
         /// validation succeed then executes all applicable handlers that implement <see cref="IResponseHandler{TRequest,TResult}"/>
-        /// and return all the responses as a collection of <see cref="IResponse{TResult}"/>. If main handler failed
+        /// and return all the responses as a collection of <see cref="Response{TResult}"/>. If main handler failed
         /// then the exception propagates to the caller. Otherwise the method continue executing other handlers and
         /// return responses fo the successful handlers. The collection response can be add/remove/modify using
         /// <see cref="IResponseFilter{TRequest,TResult}"/>. When all the handler execution finished the collected result pass
@@ -260,6 +260,6 @@ namespace Bolt.RequestBus
         /// <typeparam name="TRequest"></typeparam>
         /// <typeparam name="TResult"></typeparam>
         /// <returns>Task{IEnumerable{IResponse{TResult}}}</returns>
-        Task<IResponseCollection<TResult>> ResponsesAsync<TRequest, TResult>(TRequest request);
+        Task<ResponseCollection<TResult>> ResponsesAsync<TRequest, TResult>(TRequest request);
     }
 }

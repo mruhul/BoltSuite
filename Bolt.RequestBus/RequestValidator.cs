@@ -6,7 +6,7 @@ namespace Bolt.RequestBus
 {
     public interface IRequestValidator<in TRequest>
     {
-        IEnumerable<IError> Validate(IRequestBusContext context, TRequest request);
+        IEnumerable<Error> Validate(IRequestBusContext context, TRequest request);
         bool IsApplicable(IRequestBusContext context, TRequest request);
         /// <summary>
         /// High priority value will execute first in order
@@ -16,7 +16,7 @@ namespace Bolt.RequestBus
     
     public interface IRequestValidatorAsync<in TRequest>
     {
-        Task<IEnumerable<IError>> Validate(IRequestBusContext context, TRequest request);
+        Task<IEnumerable<Error>> Validate(IRequestBusContext context, TRequest request);
         bool IsApplicable(IRequestBusContext context, TRequest request);
         /// <summary>
         /// High priority value will execute first in order
@@ -26,7 +26,7 @@ namespace Bolt.RequestBus
     
     public abstract class RequestValidator<TRequest> : IRequestValidator<TRequest>
     {
-        public abstract IEnumerable<IError> Validate(IRequestBusContext context, TRequest request);
+        public abstract IEnumerable<Error> Validate(IRequestBusContext context, TRequest request);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
         public virtual int Priority { get; } = 0;
@@ -34,7 +34,7 @@ namespace Bolt.RequestBus
     
     public abstract class RequestValidatorAsync<TRequest> : IRequestValidatorAsync<TRequest>
     {
-        public abstract Task<IEnumerable<IError>> Validate(IRequestBusContext context, TRequest request);
+        public abstract Task<IEnumerable<Error>> Validate(IRequestBusContext context, TRequest request);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
         

@@ -33,9 +33,9 @@ namespace Bolt.RequestBus.Impl
 
             return context;
         }
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IResponse<TResult> Validate<TRequest, TResult>(IRequestBusContext context, TRequest request)
+        private Response<TValue> Validate<TRequest, TValue>(IRequestBusContext context, TRequest request)
         {
             var handlers = _sp.GetServices<IRequestValidator<TRequest>>()
                 .OrderByDescending(x => x.Priority);
@@ -44,16 +44,16 @@ namespace Bolt.RequestBus.Impl
             {
                 if(!handler.IsApplicable(context, request)) continue;
 
-                var errors = handler.Validate(context, request)?.ToArray() ?? Array.Empty<IError>();
-                
-                if(errors.Length > 0) return Bolt.RequestBus.Response.Failed<TResult>(errors);
+                var errors = handler.Validate(context, request)?.ToArray() ?? Array.Empty<Error>();
+
+                if (errors.Length > 0) return Bolt.RequestBus.Response.Failed<TValue>(errors);
             }
 
             return null;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private async Task<IResponse<TResult>> ValidateAsync<TRequest, TResult>(IRequestBusContext context, TRequest request)
+        private async Task<Response<TValue>> ValidateAsync<TRequest, TValue>(IRequestBusContext context, TRequest request)
         {
             var handlers = _sp.GetServices<IRequestValidatorAsync<TRequest>>()
                 .OrderByDescending(x => x.Priority);
@@ -62,9 +62,9 @@ namespace Bolt.RequestBus.Impl
             {
                 if(!handler.IsApplicable(context, request)) continue;
 
-                var errors = (await handler.Validate(context, request))?.ToArray() ?? Array.Empty<IError>();
+                var errors = (await handler.Validate(context, request))?.ToArray() ?? Array.Empty<Error>();
                 
-                if(errors.Length > 0) return Bolt.RequestBus.Response.Failed<TResult>(errors);
+                if(errors.Length > 0) return Bolt.RequestBus.Response.Failed<TValue>(errors);
             }
 
             return null;

@@ -52,7 +52,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class TestContextHandler : RequestHandler<TestRequest, TestResponse>
         {
-            protected override TestResponse Handle(IRequestBusContext context, TestRequest request)
+            public override Response<TestResponse> Handle(IRequestBusContext context, TestRequest request)
             {
                 return new TestResponse
                 {
@@ -91,7 +91,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class TestRequestHandler : RequestHandler<TestRequest, TestResponse>
         {
-            protected override TestResponse Handle(IRequestBusContext context, TestRequest request)
+            public override Response<TestResponse> Handle(IRequestBusContext context, TestRequest request)
             {
                 return new TestResponse
                 {
@@ -102,15 +102,14 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
 
         class TestRequestNotApplicableHandler : RequestHandler<TestRequest, TestResponse>
         {
-            protected override TestResponse Handle(IRequestBusContext context, TestRequest request)
+            public override bool IsApplicable(IRequestBusContext context, TestRequest request) => false;
+            public override Response<TestResponse> Handle(IRequestBusContext context, TestRequest request)
             {
                 return new TestResponse
                 {
                     HandlerExecuted = this.GetType().Name
                 };
             }
-
-            public override bool IsApplicable(IRequestBusContext context, TestRequest request) => false;
         }
     }
 }

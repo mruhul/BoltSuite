@@ -2,71 +2,67 @@ using System.Threading.Tasks;
 
 namespace Bolt.RequestBus
 {
-    public interface IRequestHandler<in TRequest, out TResult>
+    public interface IRequestHandler<in TRequest, TResult>
     {
-        IResponse<TResult> Handle(IRequestBusContext context, TRequest request);
+        Response<TResult> Handle(IRequestBusContext context, TRequest request);
         bool IsApplicable(IRequestBusContext context, TRequest request);
     }
     
     public interface IRequestHandlerAsync<in TRequest, TResult>
     {
-        Task<IResponse<TResult>> Handle(IRequestBusContext context, TRequest request);
+        Task<Response<TResult>> Handle(IRequestBusContext context, TRequest request);
         bool IsApplicable(IRequestBusContext context, TRequest request);
     }
     
     public abstract class RequestHandler<TRequest> : IRequestHandler<TRequest, None>
     {
-        IResponse<None> IRequestHandler<TRequest, None>.Handle(IRequestBusContext context, TRequest request)
+        Response<None> IRequestHandler<TRequest, None>.Handle(IRequestBusContext context, TRequest request)
         {
-            this.Handle(context, request);
+            var rsp = this.Handle(context, request);
 
-            return Response.Succeed(None.Instance);
+            return new Response<None>
+            {
+                Errors = rsp.Errors,
+                IsSucceed = rsp.IsSucceed,
+                StatusCode = rsp.StatusCode
+            };
         }
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
         
-        protected abstract void Handle(IRequestBusContext context, TRequest request);
+        protected abstract Response Handle(IRequestBusContext context, TRequest request);
     }
     
     public abstract class RequestHandlerAsync<TRequest> : IRequestHandlerAsync<TRequest, None>
     {
-        async Task<IResponse<None>> IRequestHandlerAsync<TRequest, None>.Handle(IRequestBusContext context, TRequest request)
+        async Task<Response<None>> IRequestHandlerAsync<TRequest, None>.Handle(IRequestBusContext context, TRequest request)
         {
-            await this.Handle(context, request);
+            var rsp = await this.Handle(context, request);
 
-            return Response.Succeed(None.Instance);
+            return new Response<None>
+            {
+                StatusCode = rsp.StatusCode,
+                IsSucceed = rsp.IsSucceed,
+                Errors = rsp.Errors
+            };
         }
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
         
-        protected abstract Task Handle(IRequestBusContext context, TRequest request);
+        protected abstract Task<Response> Handle(IRequestBusContext context, TRequest request);
     }
     
     public abstract class RequestHandler<TRequest, TResult> : IRequestHandler<TRequest, TResult>
     {
-        IResponse<TResult> IRequestHandler<TRequest, TResult>.Handle(IRequestBusContext context, TRequest request)
-        {
-            var result = this.Handle(context, request);
-
-            return Response.Succeed(result);
-        }
-
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
         
-        protected abstract TResult Handle(IRequestBusContext context, TRequest request);
+        public abstract Response<TResult> Handle(IRequestBusContext context, TRequest request);
     }
     
     public abstract class RequestHandlerAsync<TRequest, TResult> : IRequestHandlerAsync<TRequest, TResult>
     {
-        async Task<IResponse<TResult>> IRequestHandlerAsync<TRequest, TResult>.Handle(IRequestBusContext context, TRequest request)
-        {
-            var result = await this.Handle(context, request);
-
-            return Response.Succeed(result);
-        }
+        public abstract Task<Response<TResult>> Handle(IRequestBusContext context, TRequest request);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
-        
-        protected abstract Task<TResult> Handle(IRequestBusContext context, TRequest request);
     }
 }

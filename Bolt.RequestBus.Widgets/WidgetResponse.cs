@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace Bolt.RequestBus.Widgets
@@ -48,9 +49,9 @@ namespace Bolt.RequestBus.Widgets
     {
         IWidgetResponse Ok(object data);
         IWidgetResponse StatusCode(int statusCode, object data = null);
-        IResponse<IWidgetResponse> BadRequest(IEnumerable<IError> errors);
-        IResponse<IWidgetResponse> Failed(params IError[] errors);
-        IResponse<IWidgetResponse> Redirect(IRedirectAction redirectAction);
+        Response<IWidgetResponse> BadRequest(IEnumerable<Error> errors);
+        Response<IWidgetResponse> Failed(params Error[] errors);
+        Response<IWidgetResponse> Redirect(IRedirectAction redirectAction);
     }
 
     internal class WidgetResponseBuilder : 
@@ -86,26 +87,26 @@ namespace Bolt.RequestBus.Widgets
             return _rsp;
         }
 
-        public IResponse<IWidgetResponse> BadRequest(IEnumerable<IError> errors)
+        public Response<IWidgetResponse> BadRequest(IEnumerable<Error> errors)
         {
             _rsp.StatusCode = 400;
-            return Response.Failed<IWidgetResponse>(errors, _rsp);
+            return Response.Failed<IWidgetResponse>(errors.ToArray(), _rsp);
         }
 
-        public IResponse<IWidgetResponse> Failed(params IError[] errors)
+        public Response<IWidgetResponse> Failed(params Error[] errors)
         {
             _rsp.StatusCode = 500;
             return Response.Failed<IWidgetResponse>(errors, _rsp);
         }
 
-        public IResponse<IWidgetResponse> Redirect(IRedirectAction redirectAction)
+        public Response<IWidgetResponse> Redirect(IRedirectAction redirectAction)
         {
             _rsp.StatusCode = redirectAction.IsPermanent 
                 ? 301
                 : 307;
             _rsp.RedirectAction = redirectAction;
 
-            return Response.Succeed(_rsp);
+            return Response.Ok(_rsp.StatusCode, _rsp as IWidgetResponse);
         }
 
         public IWidgetResponseWithDisplayOrder WithDisplayOrder(int order)

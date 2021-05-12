@@ -6,50 +6,50 @@ namespace Bolt.RequestBus.Impl
 {
     internal sealed partial class RequestBus
     {
-        public IResponse Send<TRequest>(TRequest request)
+        public Response Send<TRequest>(TRequest request)
         {
             return Send<TRequest, None>(request, ignoreNoHandler: false);
         }
 
-        public IResponse TrySend<TRequest>(TRequest request)
+        public Response TrySend<TRequest>(TRequest request)
         {
             return Send<TRequest, None>(request, ignoreNoHandler: false);
         }
 
-        public IResponse<TResult> Send<TRequest, TResult>(TRequest request)
+        public Response<TResult> Send<TRequest, TResult>(TRequest request)
         {
             return Send<TRequest, TResult>(request, ignoreNoHandler: false);
         }
 
-        public IResponse<TResult> TrySend<TRequest, TResult>(TRequest request)
+        public Response<TResult> TrySend<TRequest, TResult>(TRequest request)
         {
             return Send<TRequest, TResult>(request, ignoreNoHandler: true);
         }
 
-        public async Task<IResponse> SendAsync<TRequest>(TRequest request)
+        public async Task<Response> SendAsync<TRequest>(TRequest request)
         {
             return await SendAsync<TRequest, None>(request, ignoreNoHandler: false)
                 .ConfigureAwait(false);
         }
 
-        public async Task<IResponse> TrySendAsync<TRequest>(TRequest request)
+        public async Task<Response> TrySendAsync<TRequest>(TRequest request)
         {
             return await SendAsync<TRequest, None>(request, ignoreNoHandler: true)
                 .ConfigureAwait(false);
         }
 
-        public Task<IResponse<TResult>> SendAsync<TRequest, TResult>(TRequest request)
+        public Task<Response<TResult>> SendAsync<TRequest, TResult>(TRequest request)
         {
             return SendAsync<TRequest, TResult>(request, ignoreNoHandler: false);
         }
 
-        public Task<IResponse<TResult>> TrySendAsync<TRequest, TResult>(TRequest request)
+        public Task<Response<TResult>> TrySendAsync<TRequest, TResult>(TRequest request)
         {
             return SendAsync<TRequest, TResult>(request, ignoreNoHandler: true);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IResponse<TResult> Send<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
+        private Response<TResult> Send<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
         {
             var context = _context.Value;
 
@@ -72,7 +72,7 @@ namespace Bolt.RequestBus.Impl
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private async Task<IResponse<TResult>> SendAsync<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
+        private async Task<Response<TResult>> SendAsync<TRequest, TResult>(TRequest request, bool ignoreNoHandler)
         {
             var context = _context.Value;
 

@@ -61,24 +61,24 @@ namespace Bolt.RequestBus.Widgets.Tests
 
         class MainTestWidget : WidgetResponseHandler<TestRequest>
         {
-            protected override IWidgetResponse Handle(IRequestBusContext context, TestRequest request)
+            public override Response<IWidgetResponse> Handle(IRequestBusContext context, TestRequest request)
             {
-                return WidgetResponse
+                return Response.Ok(WidgetResponse
                     .WithName("main")
                     .WithType("intro")
                     .Ok(new
                     {
                         Heading = "Welcome to app",
                         Summary = "This is summary"
-                    });
+                    }));
             }
         }
 
         class TestWidget2Nd : WidgetResponseHandler<TestRequest>
         {
-            protected override IWidgetResponse Handle(IRequestBusContext context, TestRequest request)
+            public override Response<IWidgetResponse> Handle(IRequestBusContext context, TestRequest request)
             {
-                return WidgetResponse.WithName("recently-viewed")
+                var rsp = WidgetResponse.WithName("recently-viewed")
                     .WithType("data-carousel")
                     .WithDisplayOrder(2)
                     .Ok(new[]
@@ -90,14 +90,16 @@ namespace Bolt.RequestBus.Widgets.Tests
                             PhotoUrl = "http://resource.static.com/200x160"
                         }
                     });
+
+                return Response.Ok(rsp);
             }
         }
         
         class TestWidget3Rd : WidgetResponseHandler<TestRequest>
         {
-            protected override IWidgetResponse Handle(IRequestBusContext context, TestRequest request)
+            public override Response<IWidgetResponse> Handle(IRequestBusContext context, TestRequest request)
             {
-                return WidgetResponse.WithName("latest-editorials")
+                var rsp = WidgetResponse.WithName("latest-editorials")
                     .WithType("data-carousel")
                     .WithDisplayOrder(1)
                     .Ok(new[]
@@ -109,12 +111,14 @@ namespace Bolt.RequestBus.Widgets.Tests
                             PhotoUrl = "http://resource.static.com/200x160"
                         }
                     });
+
+                return Response.Ok(rsp);
             }
         }
         
         public class TestRequestValidator : RequestValidator<TestRequest>
         {
-            public override IEnumerable<IError> Validate(IRequestBusContext context, TestRequest request)
+            public override IEnumerable<Error> Validate(IRequestBusContext context, TestRequest request)
             {
                 if (string.IsNullOrWhiteSpace(request.Name))
                     yield return Error.Create("Name is required.", nameof(request.Name));
