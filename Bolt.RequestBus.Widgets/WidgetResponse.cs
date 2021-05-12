@@ -4,10 +4,10 @@ using System.Net;
 
 namespace Bolt.RequestBus.Widgets
 {
-    public sealed class WidgetResponse : IWidgetResponse
+    public sealed class WidgetResponse
     {
         public int StatusCode { get; set; } = 200;
-        public IRedirectAction RedirectAction { get; set; } = null;
+        public RedirectAction RedirectAction { get; set; } = null;
         public string Name { get; set; }
         public string Type { get; set; }
         public object Data { get; set; }
@@ -47,11 +47,11 @@ namespace Bolt.RequestBus.Widgets
 
     public interface IWidgetResponseBuildInstance
     {
-        IWidgetResponse Ok(object data);
-        IWidgetResponse StatusCode(int statusCode, object data = null);
-        Response<IWidgetResponse> BadRequest(IEnumerable<Error> errors);
-        Response<IWidgetResponse> Failed(params Error[] errors);
-        Response<IWidgetResponse> Redirect(IRedirectAction redirectAction);
+        WidgetResponse Ok(object data);
+        WidgetResponse StatusCode(int statusCode, object data = null);
+        Response<WidgetResponse> BadRequest(IEnumerable<Error> errors);
+        Response<WidgetResponse> Failed(params Error[] errors);
+        Response<WidgetResponse> Redirect(RedirectAction redirectAction);
     }
 
     internal class WidgetResponseBuilder : 
@@ -72,7 +72,7 @@ namespace Bolt.RequestBus.Widgets
             return this;
         }
 
-        public IWidgetResponse Ok(object data)
+        public WidgetResponse Ok(object data)
         {
             _rsp.StatusCode = 200;
             _rsp.Data = data;
@@ -80,33 +80,33 @@ namespace Bolt.RequestBus.Widgets
             return _rsp;
         }
 
-        public IWidgetResponse StatusCode(int statusCode, object data = null)
+        public WidgetResponse StatusCode(int statusCode, object data = null)
         {
             _rsp.StatusCode = statusCode;
             _rsp.Data = data;
             return _rsp;
         }
 
-        public Response<IWidgetResponse> BadRequest(IEnumerable<Error> errors)
+        public Response<WidgetResponse> BadRequest(IEnumerable<Error> errors)
         {
             _rsp.StatusCode = 400;
-            return Response.Failed<IWidgetResponse>(errors.ToArray(), _rsp);
+            return Response.Failed<WidgetResponse>(errors.ToArray(), _rsp);
         }
 
-        public Response<IWidgetResponse> Failed(params Error[] errors)
+        public Response<WidgetResponse> Failed(params Error[] errors)
         {
             _rsp.StatusCode = 500;
-            return Response.Failed<IWidgetResponse>(errors, _rsp);
+            return Response.Failed<WidgetResponse>(errors, _rsp);
         }
 
-        public Response<IWidgetResponse> Redirect(IRedirectAction redirectAction)
+        public Response<WidgetResponse> Redirect(RedirectAction redirectAction)
         {
             _rsp.StatusCode = redirectAction.IsPermanent 
                 ? 301
                 : 307;
             _rsp.RedirectAction = redirectAction;
 
-            return Response.Ok(_rsp.StatusCode, _rsp as IWidgetResponse);
+            return Response.Ok(_rsp.StatusCode, _rsp as WidgetResponse);
         }
 
         public IWidgetResponseWithDisplayOrder WithDisplayOrder(int order)

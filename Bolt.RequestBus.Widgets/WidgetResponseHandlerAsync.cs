@@ -2,9 +2,9 @@ using System.Threading.Tasks;
 
 namespace Bolt.RequestBus.Widgets
 {
-    public abstract class WidgetResponseHandlerAsync<TRequest> : IResponseHandlerAsync<TRequest, IWidgetResponse>
+    public abstract class WidgetResponseHandlerAsync<TRequest> : IResponseHandlerAsync<TRequest, WidgetResponse>
     {
-        public abstract Task<Response<IWidgetResponse>> Handle(IRequestBusContext context, TRequest request);
+        public abstract Task<Response<WidgetResponse>> Handle(IRequestBusContext context, TRequest request);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
 
@@ -12,9 +12,9 @@ namespace Bolt.RequestBus.Widgets
     }
     
     
-    public abstract class WidgetMainResponseHandlerAsync<TRequest> : IResponseHandlerAsync<TRequest, IWidgetResponse>
+    public abstract class WidgetMainResponseHandlerAsync<TRequest> : IResponseHandlerAsync<TRequest, WidgetResponse>
     {
-        public abstract Task<Response<IWidgetResponse>> Handle(IRequestBusContext context, TRequest request);
+        public abstract Task<Response<WidgetResponse>> Handle(IRequestBusContext context, TRequest request);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
 
@@ -22,9 +22,9 @@ namespace Bolt.RequestBus.Widgets
     }
 
     
-    public abstract class WidgetIndependentResponseHandlerAsync<TRequest> : IResponseHandlerAsync<TRequest, IWidgetResponse>
+    public abstract class WidgetIndependentResponseHandlerAsync<TRequest> : IResponseHandlerAsync<TRequest, WidgetResponse>
     {
-        public abstract Task<Response<IWidgetResponse>> Handle(IRequestBusContext context, TRequest request);
+        public abstract Task<Response<WidgetResponse>> Handle(IRequestBusContext context, TRequest request);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
 

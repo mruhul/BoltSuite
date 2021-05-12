@@ -2,17 +2,7 @@
 
 namespace Bolt.RequestBus.Widgets
 {
-    public interface IWidgetUnitResponse
-    {
-        int StatusCode { get; }
-        IEnumerable<Error> Errors { get; }
-        string Name { get; }
-        string Type { get; }
-        object Data { get; }
-        int DisplayOrder { get; }
-    }
-
-    internal class WidgetUnitResponse : IWidgetUnitResponse
+    public class WidgetUnitResponse
     {
         public int StatusCode { get; set; }
         public IEnumerable<Error> Errors { get; set; }

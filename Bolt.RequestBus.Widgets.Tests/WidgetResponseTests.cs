@@ -45,9 +45,9 @@ namespace Bolt.RequestBus.Widgets.Tests
         {
             var sut = IocHelper.GetRequestBus(sc =>
             {
-                sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, MainTestWidget>();
-                sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, TestWidget3Rd>();
-                sc.AddTransient<IResponseHandler<TestRequest, IWidgetResponse>, TestWidget2Nd>();
+                sc.AddTransient<IResponseHandler<TestRequest, WidgetResponse>, MainTestWidget>();
+                sc.AddTransient<IResponseHandler<TestRequest, WidgetResponse>, TestWidget3Rd>();
+                sc.AddTransient<IResponseHandler<TestRequest, WidgetResponse>, TestWidget2Nd>();
             });
 
             var rsp = sut.WidgetResponse(new TestRequest());
@@ -61,7 +61,7 @@ namespace Bolt.RequestBus.Widgets.Tests
 
         class MainTestWidget : WidgetResponseHandler<TestRequest>
         {
-            public override Response<IWidgetResponse> Handle(IRequestBusContext context, TestRequest request)
+            public override Response<WidgetResponse> Handle(IRequestBusContext context, TestRequest request)
             {
                 return Response.Ok(WidgetResponse
                     .WithName("main")
@@ -76,9 +76,9 @@ namespace Bolt.RequestBus.Widgets.Tests
 
         class TestWidget2Nd : WidgetResponseHandler<TestRequest>
         {
-            public override Response<IWidgetResponse> Handle(IRequestBusContext context, TestRequest request)
+            public override Response<WidgetResponse> Handle(IRequestBusContext context, TestRequest request)
             {
-                var rsp = WidgetResponse.WithName("recently-viewed")
+                return WidgetResponse.WithName("recently-viewed")
                     .WithType("data-carousel")
                     .WithDisplayOrder(2)
                     .Ok(new[]
@@ -90,16 +90,14 @@ namespace Bolt.RequestBus.Widgets.Tests
                             PhotoUrl = "http://resource.static.com/200x160"
                         }
                     });
-
-                return Response.Ok(rsp);
             }
         }
         
         class TestWidget3Rd : WidgetResponseHandler<TestRequest>
         {
-            public override Response<IWidgetResponse> Handle(IRequestBusContext context, TestRequest request)
+            public override Response<WidgetResponse> Handle(IRequestBusContext context, TestRequest request)
             {
-                var rsp = WidgetResponse.WithName("latest-editorials")
+                return WidgetResponse.WithName("latest-editorials")
                     .WithType("data-carousel")
                     .WithDisplayOrder(1)
                     .Ok(new[]
@@ -111,8 +109,6 @@ namespace Bolt.RequestBus.Widgets.Tests
                             PhotoUrl = "http://resource.static.com/200x160"
                         }
                     });
-
-                return Response.Ok(rsp);
             }
         }
         

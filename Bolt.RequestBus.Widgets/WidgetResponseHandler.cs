@@ -1,8 +1,8 @@
 namespace Bolt.RequestBus.Widgets
 {
-    public abstract class WidgetResponseHandler<TRequest> : IResponseHandler<TRequest, IWidgetResponse>
+    public abstract class WidgetResponseHandler<TRequest> : IResponseHandler<TRequest, WidgetResponse>
     {
-        public abstract Response<IWidgetResponse> Handle(IRequestBusContext context, TRequest request);
+        public abstract Response<WidgetResponse> Handle(IRequestBusContext context, TRequest request);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
 
@@ -10,9 +10,9 @@ namespace Bolt.RequestBus.Widgets
     }
     
     
-    public abstract class WidgetMainResponseHandler<TRequest> : IResponseHandler<TRequest, IWidgetResponse>
+    public abstract class WidgetMainResponseHandler<TRequest> : IResponseHandler<TRequest, WidgetResponse>
     {
-        public abstract Response<IWidgetResponse> Handle(IRequestBusContext context, TRequest request);
+        public abstract Response<WidgetResponse> Handle(IRequestBusContext context, TRequest request);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
 
@@ -20,9 +20,9 @@ namespace Bolt.RequestBus.Widgets
     }
 
     
-    public abstract class WidgetIndependentResponseHandler<TRequest> : IResponseHandler<TRequest, IWidgetResponse>
+    public abstract class WidgetIndependentResponseHandler<TRequest> : IResponseHandler<TRequest, WidgetResponse>
     {
-        public abstract Response<IWidgetResponse> Handle(IRequestBusContext context, TRequest request);
+        public abstract Response<WidgetResponse> Handle(IRequestBusContext context, TRequest request);
 
         public virtual bool IsApplicable(IRequestBusContext context, TRequest request) => true;
 

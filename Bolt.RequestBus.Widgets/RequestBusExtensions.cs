@@ -6,21 +6,21 @@ namespace Bolt.RequestBus.Widgets
 {
     public static class RequestBusExtensions
     {
-        public static async Task<IWidgetGroupResponse> WidgetResponseAsync<TRequest>(this IRequestBus bus, TRequest request)
+        public static async Task<WidgetGroupResponse> WidgetResponseAsync<TRequest>(this IRequestBus bus, TRequest request)
         {
-            var widgetsRsp = await bus.ResponsesAsync<TRequest, IWidgetResponse>(request);
+            var widgetsRsp = await bus.ResponsesAsync<TRequest, WidgetResponse>(request);
 
             return BuildWidgetGroupResponse<TRequest>(widgetsRsp);
         }
         
-        public static IWidgetGroupResponse WidgetResponse<TRequest>(this IRequestBus bus, TRequest request)
+        public static WidgetGroupResponse WidgetResponse<TRequest>(this IRequestBus bus, TRequest request)
         {
-            var widgetsRsp = bus.Responses<TRequest, IWidgetResponse>(request);
+            var widgetsRsp = bus.Responses<TRequest, WidgetResponse>(request);
 
             return BuildWidgetGroupResponse<TRequest>(widgetsRsp);
         }
 
-        private static IWidgetGroupResponse BuildWidgetGroupResponse<TRequest>(ResponseCollection<IWidgetResponse> rsp)
+        private static WidgetGroupResponse BuildWidgetGroupResponse<TRequest>(ResponseCollection<WidgetResponse> rsp)
         {
             var result = new WidgetGroupResponse();
             var mainRsp = rsp.MainResponse();
@@ -59,7 +59,7 @@ namespace Bolt.RequestBus.Widgets
             return result;
         }
 
-        private static IWidgetUnitResponse BuildWidgetUnitResponse(Response<IWidgetResponse> rsp)
+        private static WidgetUnitResponse BuildWidgetUnitResponse(Response<WidgetResponse> rsp)
         {
             return new WidgetUnitResponse
             {
