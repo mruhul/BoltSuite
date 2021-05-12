@@ -42,7 +42,7 @@ Now we define RequestHandler for that defined request and response as below:
             _settings = settings.Value;
         }
 
-        protected override async Task<BookDetailsViewModel> Handle(IRequestBusContext context, BookDetailsRequest request)
+        public override async Task<Response<BookDetailsViewModel>> Handle(IRequestBusContext context, BookDetailsRequest request)
         {
             // load raw book data from db
             var detailsRow = await _repo.GetById(request.Id);
