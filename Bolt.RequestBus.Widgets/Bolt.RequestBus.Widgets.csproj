@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>net5</TargetFrameworks>
         <Authors>Mohammad Ruhul Amin</Authors>
-        <Version>2.0.0-beta04</Version>
+        <Version>2.0.0-beta05</Version>
         <RepositoryUrl>https://github.com/mruhul/BoltSuite/tree/master/Bolt.RequestBus.Widgets</RepositoryUrl>
         <Description>A lib to provide multiple response handlers for a single requests. Mainly targeted to an backend for frontend api where we can return aggregate response of multiple applicable handlers</Description>
     </PropertyGroup>

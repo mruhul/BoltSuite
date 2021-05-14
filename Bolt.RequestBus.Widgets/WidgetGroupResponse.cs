@@ -9,7 +9,7 @@ namespace Bolt.RequestBus.Widgets
         public string StatusReason { get; init; }
         public IEnumerable<Error> Errors { get; init; } = Enumerable.Empty<Error>();
         public RedirectAction RedirectAction { get; init; }
-        public IEnumerable<WidgetUnitResponse> Widgets { get; init; }
+        public IEnumerable<WidgetUnitResponse> Widgets { get; init; } = Enumerable.Empty<WidgetUnitResponse>();
     }
 
     public sealed record WidgetUnitResponse
