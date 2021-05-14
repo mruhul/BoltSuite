@@ -10,17 +10,17 @@ namespace Bolt.RequestBus.Widgets
         {
             var widgetsRsp = await bus.ResponsesAsync<TRequest, WidgetResponse>(request);
 
-            return BuildWidgetGroupResponse<TRequest>(widgetsRsp);
+            return BuildWidgetGroupResponse(widgetsRsp);
         }
         
         public static WidgetGroupResponse WidgetResponse<TRequest>(this IRequestBus bus, TRequest request)
         {
             var widgetsRsp = bus.Responses<TRequest, WidgetResponse>(request);
 
-            return BuildWidgetGroupResponse<TRequest>(widgetsRsp);
+            return BuildWidgetGroupResponse(widgetsRsp);
         }
 
-        private static WidgetGroupResponse BuildWidgetGroupResponse<TRequest>(ResponseCollection<WidgetResponse> rsp)
+        private static WidgetGroupResponse BuildWidgetGroupResponse(ResponseCollection<WidgetResponse> rsp)
         {
             var units = new List<WidgetUnitResponse>();
 
