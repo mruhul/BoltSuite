@@ -63,14 +63,14 @@ namespace Bolt.RequestBus.Widgets.Tests
         {
             public override Response<WidgetResponse> Handle(IRequestBusContext context, TestRequest request)
             {
-                return Response.Ok(WidgetResponse
+                return WidgetBuilder
                     .WithName("main")
                     .WithType("intro")
-                    .Ok(new
+                    .Build(new
                     {
                         Heading = "Welcome to app",
                         Summary = "This is summary"
-                    }));
+                    });
             }
         }
 
@@ -78,10 +78,11 @@ namespace Bolt.RequestBus.Widgets.Tests
         {
             public override Response<WidgetResponse> Handle(IRequestBusContext context, TestRequest request)
             {
-                return WidgetResponse.WithName("recently-viewed")
+                return WidgetBuilder
+                    .WithName("recently-viewed")
                     .WithType("data-carousel")
                     .WithDisplayOrder(2)
-                    .Ok(new[]
+                    .Build(new[]
                     {
                         new
                         {
@@ -97,10 +98,11 @@ namespace Bolt.RequestBus.Widgets.Tests
         {
             public override Response<WidgetResponse> Handle(IRequestBusContext context, TestRequest request)
             {
-                return WidgetResponse.WithName("latest-editorials")
+                return WidgetBuilder
+                    .WithName("latest-editorials")
                     .WithType("data-carousel")
                     .WithDisplayOrder(1)
-                    .Ok(new[]
+                    .Build(new[]
                     {
                         new
                         {

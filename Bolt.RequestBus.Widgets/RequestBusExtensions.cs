@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Bolt.RequestBus.Widgets
@@ -23,53 +23,72 @@ namespace Bolt.RequestBus.Widgets
         private static WidgetGroupResponse BuildWidgetGroupResponse<TRequest>(ResponseCollection<WidgetResponse> rsp)
         {
             var result = new WidgetGroupResponse();
+
+            var units = new List<WidgetUnitResponse>();
+
             var mainRsp = rsp.MainResponse();
             if (mainRsp != null)
             {
                 if (!mainRsp.IsSucceed || !StatusCodeHelper.IsSuccessful(mainRsp.StatusCode))
                 {
-                    result.StatusCode = mainRsp.StatusCode ?? 400;
-                    result.Errors = mainRsp.Errors;
-                    return result;
+                    return new WidgetGroupResponse
+                    {
+                        Errors = mainRsp.Errors,
+                        StatusCode = mainRsp.StatusCode ?? 400
+                    };
                 }
 
                 if (!string.IsNullOrWhiteSpace(mainRsp.Value?.RedirectAction?.Url))
                 {
-                    result.StatusCode = mainRsp.StatusCode ?? 302;
-                    result.RedirectAction = mainRsp.Value.RedirectAction;
-                    return result;
+                    return new WidgetGroupResponse
+                    {
+                        RedirectAction = mainRsp.Value.RedirectAction,
+                        StatusCode = mainRsp.StatusCode ?? 302
+                    };
                 }
 
-                result.StatusCode = mainRsp.StatusCode ?? 200;
-                
-                result.AddResponse(BuildWidgetUnitResponse(mainRsp));
-            }
-            else
-            {
-                result.StatusCode = 200;
+
+                units.AddRange(BuildWidgetUnitResponse(mainRsp));
             }
 
             var otherRsp = rsp.OtherResponses();
             
             foreach (var otherResponse in otherRsp)
             {
-                result.AddResponse(BuildWidgetUnitResponse(otherResponse));
+                units.AddRange(BuildWidgetUnitResponse(otherResponse));
             }
 
-            return result;
+            return new WidgetGroupResponse
+            {
+                StatusCode = mainRsp?.StatusCode ?? 200,
+                Widgets = units
+            };
         }
 
-        private static WidgetUnitResponse BuildWidgetUnitResponse(Response<WidgetResponse> rsp)
+        private static IEnumerable<WidgetUnitResponse> BuildWidgetUnitResponse(Response<WidgetResponse> rsp)
         {
-            return new WidgetUnitResponse
+            var widgets = rsp?.Value?.Widgets;
+
+            if(widgets == null) yield break;
+            
+            var index = 0;
+
+            foreach (var widget in widgets)
             {
-                Data = rsp.Value?.Data,
-                Name = rsp.Value?.Name,
-                Type = rsp.Value?.Type,
-                Errors = rsp.Errors,
-                StatusCode = rsp?.StatusCode ?? 200,
-                DisplayOrder = rsp.Value?.DisplayOrder ?? 0
-            };
+                if(widget == null) continue;
+
+                yield return new WidgetUnitResponse
+                {
+                    Data = widget.Data,
+                    DisplayOrder = widget.DisplayOrder,
+                    Name = widget.Name,
+                    Type = widget.Type,
+                    StatusCode = rsp.StatusCode,
+                    Errors = index == 0 ? rsp.Errors : null
+                };
+
+                index++;
+            }
         }
     }
 }

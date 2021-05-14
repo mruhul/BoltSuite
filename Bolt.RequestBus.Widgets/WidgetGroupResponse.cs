@@ -3,15 +3,21 @@ using System.Linq;
 
 namespace Bolt.RequestBus.Widgets
 {
-    public sealed class WidgetGroupResponse
+    public sealed record WidgetGroupResponse
     {
-        private readonly List<WidgetUnitResponse> _response = new List<WidgetUnitResponse>(); 
-        public int StatusCode { get; set; }
-        public IEnumerable<Error> Errors { get; set; } = Enumerable.Empty<Error>();
-        
-        public RedirectAction RedirectAction { get; set; }
-        public IEnumerable<WidgetUnitResponse> Widgets => _response;
+        public int StatusCode { get; init; }
+        public IEnumerable<Error> Errors { get; init; } = Enumerable.Empty<Error>();
+        public RedirectAction RedirectAction { get; init; }
+        public IEnumerable<WidgetUnitResponse> Widgets { get; init; }
+    }
 
-        internal void AddResponse(WidgetUnitResponse rsp) => _response.Add(rsp);
+    public sealed record WidgetUnitResponse
+    {
+        public int? StatusCode { get; init; }
+        public IEnumerable<Error> Errors { get; init; }
+        public string Name { get; init; }
+        public string Type { get; init; }
+        public object Data { get; init; }
+        public int DisplayOrder { get; init; }
     }
 }
