@@ -22,8 +22,6 @@ namespace Bolt.RequestBus.Widgets
 
         private static WidgetGroupResponse BuildWidgetGroupResponse<TRequest>(ResponseCollection<WidgetResponse> rsp)
         {
-            var result = new WidgetGroupResponse();
-
             var units = new List<WidgetUnitResponse>();
 
             var mainRsp = rsp.MainResponse();
@@ -34,7 +32,8 @@ namespace Bolt.RequestBus.Widgets
                     return new WidgetGroupResponse
                     {
                         Errors = mainRsp.Errors,
-                        StatusCode = mainRsp.StatusCode ?? 400
+                        StatusCode = mainRsp.StatusCode ?? 400,
+                        StatusReason = mainRsp.StatusReason
                     };
                 }
 
@@ -43,7 +42,8 @@ namespace Bolt.RequestBus.Widgets
                     return new WidgetGroupResponse
                     {
                         RedirectAction = mainRsp.Value.RedirectAction,
-                        StatusCode = mainRsp.StatusCode ?? 302
+                        StatusCode = mainRsp.StatusCode ?? 302,
+                        StatusReason = mainRsp.StatusReason
                     };
                 }
 

@@ -6,6 +6,7 @@ namespace Bolt.RequestBus.Widgets
     public sealed record WidgetGroupResponse
     {
         public int StatusCode { get; init; }
+        public string StatusReason { get; init; }
         public IEnumerable<Error> Errors { get; init; } = Enumerable.Empty<Error>();
         public RedirectAction RedirectAction { get; init; }
         public IEnumerable<WidgetUnitResponse> Widgets { get; init; }
