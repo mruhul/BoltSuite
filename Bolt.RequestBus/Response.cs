@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Bolt.RequestBus
 {
     public record Response
     {
         public int? StatusCode { get; init; }
+        public string StatusReason { get; init; }
         public bool IsSucceed { get; init; }
         public Error[] Errors { get; init; } = Array.Empty<Error>();
 
@@ -19,6 +18,13 @@ namespace Bolt.RequestBus
 
         public static implicit operator Response(Error value) => Failed(value);
         public static implicit operator Response(Error[] value) => Failed(value);
+        public static implicit operator Response(ResponseStatus value) => new()
+        {
+            Errors = value.Errors,
+            IsSucceed = value.StatusCode is >= 200 and <= 299,
+            StatusCode = value.StatusCode,
+            StatusReason = value.StatusReason
+        };
 
         public static Response Ok()
             => new()
@@ -100,6 +106,13 @@ namespace Bolt.RequestBus
         public static implicit operator Response<TValue>(TValue value) => Ok(value);
         public static implicit operator Response<TValue>(Error value) => Failed<TValue>(value);
         public static implicit operator Response<TValue>(Error[] value) => Failed<TValue>(value);
+        public static implicit operator Response<TValue>(ResponseStatus value) => new()
+        {
+            Errors = value.Errors,
+            IsSucceed = value.StatusCode is >= 200 and <= 299,
+            StatusCode = value.StatusCode,
+            StatusReason = value.StatusReason
+        };
     }
 
     public record Error
@@ -115,5 +128,37 @@ namespace Bolt.RequestBus
                 Code = code,
                 PropertyName = propertyName
             };
+    }
+
+    public record ResponseStatus
+    {
+        public int StatusCode { get; init; }
+        public string StatusReason { get; init; }
+        public Error[] Errors { get; init; } = Array.Empty<Error>();
+
+        public static ResponseStatus BadRequest(params Error[] errors) 
+            => BadRequest(null, errors);
+
+        public static ResponseStatus BadRequest(string statusReason, params Error[] errors) 
+            => New (400, statusReason, errors);
+
+        public static ResponseStatus NotFound(string statusReason = null) 
+            => New(404, statusReason);
+
+        public static ResponseStatus InternalServerError(string statusReason = null)
+            => New(500, statusReason);
+
+        public static ResponseStatus FailedDependency(string statusReason = null)
+            => New(424, statusReason);
+
+        public static ResponseStatus Unauthorized(string statusReason = null)
+            => New(401, statusReason);
+
+        public static ResponseStatus New(int statusCode, string statusReason, params Error[] errors) => new()
+        {
+            StatusReason = statusReason,
+            StatusCode = statusCode,
+            Errors = errors ?? Array.Empty<Error>()
+        };
     }
 }
