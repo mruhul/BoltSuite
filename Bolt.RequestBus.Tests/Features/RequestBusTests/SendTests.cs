@@ -81,7 +81,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
             protected override Response Handle(IRequestBusContext context, TestRequestContext request)
             {
                 request.MsgInContext = context.GetOrDefault<string>("message");
-                return true;
+                return Response.Ok();
             }
         }
 
@@ -95,7 +95,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
             protected override Response Handle(IRequestBusContext context, TestRequest request)
             {
                 request.HandlersExecuted.Add(this.GetType().Name);
-                return true;
+                return Response.Ok();
             }
         }
 
@@ -105,7 +105,7 @@ namespace Bolt.RequestBus.Tests.Features.RequestBusTests
             protected override Response Handle(IRequestBusContext context, TestRequest request)
             {
                 request.HandlersExecuted.Add(this.GetType().Name);
-                return true;
+                return Response.Ok();
             }
         }
     }

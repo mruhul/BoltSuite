@@ -9,22 +9,16 @@ namespace Bolt.RequestBus
         public bool IsSucceed { get; init; }
         public Error[] Errors { get; init; } = Array.Empty<Error>();
 
-        private const int StatusCodeOkay = 200;
-        private const int StatusCodeBadRequest = 400;
-        private const int StatusCodeInternalServerError = 500;
+        internal const int StatusCodeOkay = 200;
+        internal const int StatusCodeBadRequest = 400;
+        internal const int StatusCodeUnauthorized = 401;
+        internal const int StatusCodeInternalServerError = 500;
+        internal const int StatusCodeNotFound = 404;
+        internal const int StatusCodeFailedDependency = 424;
 
-        public static implicit operator Response(bool value) => value ? Ok() : Failed();
-        public static implicit operator bool(Response rsp) => rsp?.IsSucceed ?? false;
 
         public static implicit operator Response(Error value) => Failed(value);
         public static implicit operator Response(Error[] value) => Failed(value);
-        public static implicit operator Response(ResponseStatus value) => new()
-        {
-            Errors = value.Errors,
-            IsSucceed = value.StatusCode is >= 200 and <= 299,
-            StatusCode = value.StatusCode,
-            StatusReason = value.StatusReason
-        };
 
         public static Response Ok()
             => new()
@@ -37,7 +31,7 @@ namespace Bolt.RequestBus
             => new()
             {
                 IsSucceed = true,
-                StatusCode = statusCode,
+                StatusCode = statusCode
             };
 
         public static Response<TValue> Ok<TValue>(TValue value)
@@ -72,46 +66,65 @@ namespace Bolt.RequestBus
                 StatusCode = StatusCodeBadRequest
             };
 
-        public static Response<TValue> Failed<TValue>(Error[] errors, TValue value)
-            => new()
-            {
-                IsSucceed = false,
-                Errors = errors,
-                StatusCode = StatusCodeBadRequest,
-                Value = value
-            };
+        public static Response NotFound(string statusReason = null) => Failed(statusCode: StatusCodeNotFound, statusReason: statusReason);
+        public static Response InternalServerError(string statusReason = null) => Failed(statusCode: StatusCodeInternalServerError, statusReason: statusReason);
+        public static Response FailedDependency(string statusReason = null) => Failed(statusCode: StatusCodeFailedDependency, statusReason: statusReason);
+        public static Response Unauthorized(string statusReason = null) => Failed(statusCode: StatusCodeUnauthorized, statusReason: statusReason);
+        public static Response BadRequest(string statusReason = null, params Error[] errors) => Failed(statusCode: StatusCodeBadRequest, statusReason: statusReason, errors);
+        public static Response BadRequest(params Error[] errors) => Failed(statusCode: StatusCodeBadRequest, statusReason: null, errors);
 
-        public static Response<TValue> Failed<TValue>(int statusCode, TValue value = default)
-            => new()
-            {
-                IsSucceed = false,
-                StatusCode = statusCode,
-                Value = value
-            };
+        private static Response Failed(int statusCode, string statusReason = null, params Error[] errors) => new()
+        {
+            StatusReason = statusReason,
+            IsSucceed = false,
+            StatusCode = statusCode,
+            Errors = errors ?? Array.Empty<Error>()
+        };
 
-        public static Response<TValue> Failed<TValue>(TValue value = default)
-            => new()
-            {
-                IsSucceed = false,
-                StatusCode = StatusCodeInternalServerError,
-                Value = value
-            };
+        private static Response<TValue> Failed<TValue>(int statusCode, string statusReason = null, params Error[] errors) => new()
+        {
+            StatusReason = statusReason,
+            IsSucceed = false,
+            StatusCode = statusCode,
+            Errors = errors ?? Array.Empty<Error>()
+        };
+
+        public static Response<TValue> Failed<TValue>(int statusCode, string statusReason = null, TValue value = default, params Error[] errors) => new()
+        {
+            StatusReason = statusReason,
+            IsSucceed = false,
+            StatusCode = statusCode,
+            Errors = errors ?? Array.Empty<Error>(),
+            Value = value
+        };
     }
 
-    public record Response<TValue> : Response
+    public record Response<TValue>
     {
+        public int? StatusCode { get; init; }
+        public string StatusReason { get; init; }
+        public bool IsSucceed { get; init; }
+        public Error[] Errors { get; init; } = Array.Empty<Error>();
         public TValue Value { get; init; }
 
 
-        public static implicit operator Response<TValue>(TValue value) => Ok(value);
-        public static implicit operator Response<TValue>(Error value) => Failed<TValue>(value);
-        public static implicit operator Response<TValue>(Error[] value) => Failed<TValue>(value);
-        public static implicit operator Response<TValue>(ResponseStatus value) => new()
+        public static implicit operator Response<TValue>(TValue value) => Response.Ok(value);
+
+        public static implicit operator Response<TValue>(Error value) => Response.Failed<TValue>(Response.StatusCodeBadRequest, null, default, value);
+        public static implicit operator Response<TValue>(Error[] value) => Response.Failed<TValue>(Response.StatusCodeBadRequest, null, default, value);
+        public static implicit operator Response<TValue>(Response response) => new()
         {
-            Errors = value.Errors,
-            IsSucceed = value.StatusCode is >= 200 and <= 299,
-            StatusCode = value.StatusCode,
-            StatusReason = value.StatusReason
+            Errors = response.Errors,
+            IsSucceed = response.IsSucceed,
+            StatusCode = response.StatusCode,
+            StatusReason = response.StatusReason
+        };
+        public static implicit operator Response(Response<TValue> response) => new()
+        {
+            Errors = response.Errors,
+            IsSucceed = response.IsSucceed,
+            StatusCode = response.StatusCode,
+            StatusReason = response.StatusReason
         };
     }
 
@@ -128,37 +141,5 @@ namespace Bolt.RequestBus
                 Code = code,
                 PropertyName = propertyName
             };
-    }
-
-    public record ResponseStatus
-    {
-        public int StatusCode { get; init; }
-        public string StatusReason { get; init; }
-        public Error[] Errors { get; init; } = Array.Empty<Error>();
-
-        public static ResponseStatus BadRequest(params Error[] errors) 
-            => BadRequest(null, errors);
-
-        public static ResponseStatus BadRequest(string statusReason, params Error[] errors) 
-            => New (400, statusReason, errors);
-
-        public static ResponseStatus NotFound(string statusReason = null) 
-            => New(404, statusReason);
-
-        public static ResponseStatus InternalServerError(string statusReason = null)
-            => New(500, statusReason);
-
-        public static ResponseStatus FailedDependency(string statusReason = null)
-            => New(424, statusReason);
-
-        public static ResponseStatus Unauthorized(string statusReason = null)
-            => New(401, statusReason);
-
-        public static ResponseStatus New(int statusCode, string statusReason, params Error[] errors) => new()
-        {
-            StatusReason = statusReason,
-            StatusCode = statusCode,
-            Errors = errors ?? Array.Empty<Error>()
-        };
     }
 }
