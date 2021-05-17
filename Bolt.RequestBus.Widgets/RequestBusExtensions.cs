@@ -27,13 +27,14 @@ namespace Bolt.RequestBus.Widgets
             var mainRsp = rsp.MainResponse();
             if (mainRsp != null)
             {
-                if (!mainRsp.IsSucceed || !StatusCodeHelper.IsSuccessful(mainRsp.StatusCode))
+                if (!mainRsp.IsSucceed)
                 {
                     return new WidgetGroupResponse
                     {
                         Errors = mainRsp.Errors,
                         StatusCode = mainRsp.StatusCode ?? 400,
-                        StatusReason = mainRsp.StatusReason
+                        StatusReason = mainRsp.StatusReason,
+                        Widgets = BuildWidgetUnitResponse(mainRsp)
                     };
                 }
 
@@ -43,7 +44,8 @@ namespace Bolt.RequestBus.Widgets
                     {
                         RedirectAction = mainRsp.Value.RedirectAction,
                         StatusCode = mainRsp.StatusCode ?? 302,
-                        StatusReason = mainRsp.StatusReason
+                        StatusReason = mainRsp.StatusReason,
+                        Widgets = BuildWidgetUnitResponse(mainRsp)
                     };
                 }
 
