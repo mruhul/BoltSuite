@@ -34,7 +34,8 @@ namespace Bolt.RequestBus.Widgets
                         Errors = mainRsp.Errors,
                         StatusCode = mainRsp.StatusCode ?? 400,
                         StatusReason = mainRsp.StatusReason,
-                        Widgets = BuildWidgetUnitResponse(mainRsp)
+                        Widgets = BuildWidgetUnitResponse(mainRsp),
+                        RedirectAction = mainRsp.Value?.RedirectAction
                     };
                 }
 
