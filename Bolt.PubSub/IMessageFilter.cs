@@ -2,6 +2,8 @@
 {
     public interface IMessageFilter
     {
-        Message<T> Filter<T>(Message<T> msg);
+        TMessage Filter<TMessage>(TMessage msg) where TMessage : MessageBase;
     }
+
+
 }

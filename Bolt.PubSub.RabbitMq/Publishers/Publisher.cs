@@ -13,6 +13,7 @@ namespace Bolt.PubSub.RabbitMq.Publishers
         private readonly IEnumerable<IMessageFilter> filters;
         private readonly IEnumerable<IMessageSerializer> serializers;
         private readonly IUniqueId uniqueId;
+        private readonly ISystemClock clock;
         private readonly ILogger<RabbitMqLogger> logger;
 
         public Publisher(IRabbitMqPublisher publisherWrapper,
@@ -20,6 +21,8 @@ namespace Bolt.PubSub.RabbitMq.Publishers
             IEnumerable<IMessageFilter> filters,
             IEnumerable<IMessageSerializer> serializers,
             IUniqueId uniqueId,
+            ISystemClock clock,
+            
             ILogger<RabbitMqLogger> logger)
         {
             this.publisherWrapper = publisherWrapper;
@@ -27,6 +30,7 @@ namespace Bolt.PubSub.RabbitMq.Publishers
             this.filters = filters;
             this.serializers = serializers;
             this.uniqueId = uniqueId;
+            this.clock = clock;
             this.logger = logger;
         }
 
@@ -55,10 +59,11 @@ namespace Bolt.PubSub.RabbitMq.Publishers
             var correlationId = msg.CorrelationId.IsEmpty() ? uniqueId.New().ToString() : msg.CorrelationId;
 
             AddHeaderIfNotSet(msg, HeaderNames.AppId, appId, settings.ImplicitHeaderPrefix);
-            AddHeaderIfNotSet(msg, HeaderNames.CreatedAt, msg.CreatedAt?.ToString("o"), settings.ImplicitHeaderPrefix);
+            AddHeaderIfNotSet(msg, HeaderNames.CreatedAt, msg.CreatedAt?.ToUtcFormat(), settings.ImplicitHeaderPrefix);
             AddHeaderIfNotSet(msg, HeaderNames.MessageType, msgType, settings.ImplicitHeaderPrefix);
             AddHeaderIfNotSet(msg, HeaderNames.Version, msg.Version == 0 ? "1" : msg.Version.ToString(), settings.ImplicitHeaderPrefix);
             AddHeaderIfNotSet(msg, msgType, appId, string.Empty);
+            AddHeaderIfNotSet(msg, HeaderNames.PublishedAt, clock.UtcNow.ToUtcFormat(), settings.ImplicitHeaderPrefix);
 
             var serializer = serializers.FirstOrDefault(s => s.IsApplicable(settings.ContentType.EmptyAlternative(ContentTypeNames.Json)));
 

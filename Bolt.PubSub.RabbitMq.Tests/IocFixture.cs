@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
+using NSubstitute;
 
 namespace Bolt.PubSub.RabbitMq.Tests
 {
@@ -21,9 +22,14 @@ namespace Bolt.PubSub.RabbitMq.Tests
 
             var config = new ConfigurationBuilder().Build();
 
-            sc.AddScoped(c => NSubstitute.Substitute.For<IRabbitMqSettings>());
-            sc.AddScoped(c => NSubstitute.Substitute.For<IRabbitMqPublisher>());
-            sc.AddScoped(c => NSubstitute.Substitute.For<IUniqueId>());
+            sc.AddScoped(c => {
+                var clock = Substitute.For<ISystemClock>();
+                clock.UtcNow.Returns(new DateTime(2021,01,01, 0, 0, 0, DateTimeKind.Utc));
+                return clock;
+            });
+            sc.AddScoped(c => Substitute.For<IRabbitMqSettings>());
+            sc.AddScoped(c => Substitute.For<IRabbitMqPublisher>());
+            sc.AddScoped(c => Substitute.For<IUniqueId>());
 
             sc.AddRabbitMqPublisher(config);
 

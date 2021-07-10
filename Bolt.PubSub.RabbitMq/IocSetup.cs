@@ -22,6 +22,7 @@ namespace Bolt.PubSub.RabbitMq
 
             services.AddLogging();
             services.TryAddSingleton<IUniqueId, UniqueId>();
+            services.TryAddSingleton<ISystemClock, SystemClock>();
             services.TryAddSingleton<IRabbitMqSettings, RabbitMqSettings>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IMessageSerializer, JsonSerializer>());
             services.TryAddSingleton<RabbitMqConnection>();

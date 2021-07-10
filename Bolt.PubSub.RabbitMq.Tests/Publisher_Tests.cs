@@ -140,7 +140,8 @@ namespace Bolt.PubSub.RabbitMq.Tests
                         ["blt-app-id"] = "none",
                         ["blt-msg-type"] = "SampleEvent",
                         ["blt-msg-version"] = "1",
-                        ["SampleEvent"] = "none"
+                        ["SampleEvent"] = "none",
+                        ["blt-published-at"] = "2021-01-01T00:00:00.0000000Z"
                     }
                 }
             },
@@ -181,7 +182,8 @@ namespace Bolt.PubSub.RabbitMq.Tests
                         ["b-app-id"] = "api-order",
                         ["b-msg-type"] = "Events.SampleEvent",
                         ["b-msg-version"] = "1",
-                        ["Events.SampleEvent"] = "api-order"
+                        ["Events.SampleEvent"] = "api-order",
+                        ["b-published-at"] = "2021-01-01T00:00:00.0000000Z"
                     }
                 }
             }
