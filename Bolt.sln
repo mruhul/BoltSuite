@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30406.217
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31410.414
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.RequestBus", "Bolt.RequestBus\Bolt.RequestBus.csproj", "{CAB7E2E3-4F90-4A42-9A18-8B32608EF7EF}"
 EndProject
@@ -37,7 +37,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.FluentHttpClient.Fakes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HttpTestApi", "HttpTestApi", "{A05F46D3-7772-4CFC-AE1D-180D90CB9EA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApi", "SampleApi\SampleApi.csproj", "{2F22190B-660E-4457-8B46-2BCC0CF689A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleApi", "SampleApi\SampleApi.csproj", "{2F22190B-660E-4457-8B46-2BCC0CF689A8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.PubSub", "Bolt.PubSub\Bolt.PubSub.csproj", "{24AD8EEE-319A-416F-9367-33A2267B8819}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bolt.PubSub.RabbitMq", "Bolt.PubSub.RabbitMq\Bolt.PubSub.RabbitMq.csproj", "{4EF1EE35-3FA6-44DF-8694-164A8CFA621E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bolt.PubSub.RabbitMq.Tests", "Bolt.PubSub.RabbitMq.Tests\Bolt.PubSub.RabbitMq.Tests.csproj", "{745D64E4-5D79-483D-836A-817B02E3A9C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +111,18 @@ Global
 		{2F22190B-660E-4457-8B46-2BCC0CF689A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F22190B-660E-4457-8B46-2BCC0CF689A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F22190B-660E-4457-8B46-2BCC0CF689A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24AD8EEE-319A-416F-9367-33A2267B8819}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24AD8EEE-319A-416F-9367-33A2267B8819}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24AD8EEE-319A-416F-9367-33A2267B8819}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24AD8EEE-319A-416F-9367-33A2267B8819}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EF1EE35-3FA6-44DF-8694-164A8CFA621E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EF1EE35-3FA6-44DF-8694-164A8CFA621E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EF1EE35-3FA6-44DF-8694-164A8CFA621E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EF1EE35-3FA6-44DF-8694-164A8CFA621E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{745D64E4-5D79-483D-836A-817B02E3A9C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{745D64E4-5D79-483D-836A-817B02E3A9C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{745D64E4-5D79-483D-836A-817B02E3A9C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{745D64E4-5D79-483D-836A-817B02E3A9C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +135,7 @@ Global
 		{A9693B8D-A528-45E7-9365-4D381319E737} = {94F505D6-68C0-4385-94DD-9990E5AD8999}
 		{D01BE1A1-9491-4CBB-B6BC-15FB9B5315DC} = {94F505D6-68C0-4385-94DD-9990E5AD8999}
 		{2F22190B-660E-4457-8B46-2BCC0CF689A8} = {A05F46D3-7772-4CFC-AE1D-180D90CB9EA8}
+		{745D64E4-5D79-483D-836A-817B02E3A9C0} = {94F505D6-68C0-4385-94DD-9990E5AD8999}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {29EC2B1A-9503-479F-960A-44FD904AA911}

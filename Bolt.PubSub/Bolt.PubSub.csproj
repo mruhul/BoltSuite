@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Authors>Mohammad Ruhul Amin</Authors>
+    <Version>0.0.1-beta01</Version>
+    <RepositoryUrl>https://github.com/mruhul/BoltSuite/tree/master/Bolt.PubSub</RepositoryUrl>
+    <Description>A abstraction lib that define generic pubsub</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+</Project>
