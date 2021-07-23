@@ -12,8 +12,10 @@ namespace Bolt.RequestBus.Widgets
     public sealed record SingleWidgetResponseDto
     {
         public string Name { get; init; }
+        public string Group { get; init; }
         public string Type { get; init; }
         public object Data { get; init; }
+        public Dictionary<string,object> MetaData { get; init; }
 
         /// <summary>
         /// Smaller number get should display first

@@ -22,7 +22,7 @@ namespace Bolt.RequestBus.Widgets
 
         private static WidgetGroupResponse BuildWidgetGroupResponse(ResponseCollection<WidgetResponse> rsp)
         {
-            var units = new List<WidgetUnitResponse>();
+            var units = new List<Response<WidgetResponse>>();
 
             var mainRsp = rsp.MainResponse();
             if (mainRsp != null)
@@ -34,7 +34,7 @@ namespace Bolt.RequestBus.Widgets
                         Errors = mainRsp.Errors,
                         StatusCode = mainRsp.StatusCode ?? 400,
                         StatusReason = mainRsp.StatusReason,
-                        Widgets = BuildWidgetUnitResponse(mainRsp),
+                        Widgets = Convert(new []{mainRsp}),
                         RedirectAction = mainRsp.Value?.RedirectAction
                     };
                 }
@@ -46,25 +46,21 @@ namespace Bolt.RequestBus.Widgets
                         RedirectAction = mainRsp.Value.RedirectAction,
                         StatusCode = mainRsp.StatusCode ?? 302,
                         StatusReason = mainRsp.StatusReason,
-                        Widgets = BuildWidgetUnitResponse(mainRsp)
+                        Widgets = Convert(new[] { mainRsp })
                     };
                 }
-
-
-                units.AddRange(BuildWidgetUnitResponse(mainRsp));
+                
+                units.Add(mainRsp);
             }
 
             var otherRsp = rsp.OtherResponses();
-            
-            foreach (var otherResponse in otherRsp)
-            {
-                units.AddRange(BuildWidgetUnitResponse(otherResponse));
-            }
+
+            units.AddRange(otherRsp);
 
             return new WidgetGroupResponse
             {
                 StatusCode = mainRsp?.StatusCode ?? 200,
-                Widgets = units
+                Widgets = Convert(units)
             };
         }
 
@@ -92,6 +88,74 @@ namespace Bolt.RequestBus.Widgets
 
                 index++;
             }
+        }
+
+        private static IEnumerable<WidgetUnitResponse> Convert(IEnumerable<Response<WidgetResponse>> responses)
+        {
+            if (responses == null) 
+                return Enumerable.Empty<WidgetUnitResponse>();
+
+            var result = new List<WidgetUnitResponse>();
+            var groups = new Dictionary<string, List<WidgetUnitResponse>>();
+
+            foreach (var response in responses)
+            {
+                if(response.Value == null) continue;
+
+                if(response.Value.Widgets == null) continue;
+
+                var index = 0;
+
+                foreach (var singleWidgetResponseDto in response.Value.Widgets)
+                {
+                    if (string.IsNullOrWhiteSpace(singleWidgetResponseDto.Group) is false)
+                    {
+                        if (groups.ContainsKey(singleWidgetResponseDto.Group) is false)
+                        {
+                            groups[singleWidgetResponseDto.Group] = new List<WidgetUnitResponse>();
+                        }
+
+                        groups[singleWidgetResponseDto.Group].Add(new WidgetUnitResponse
+                        {
+                            Data = singleWidgetResponseDto.Data,
+                            DisplayOrder = singleWidgetResponseDto.DisplayOrder,
+                            Name = singleWidgetResponseDto.Name,
+                            Type = singleWidgetResponseDto.Type,
+                            StatusCode = response.StatusCode,
+                            Errors = index == 0 ? response.Errors : null
+                        });
+                    }
+                    else
+                    {
+                        result.Add(new WidgetUnitResponse
+                        {
+                            Data = singleWidgetResponseDto.Data,
+                            DisplayOrder = singleWidgetResponseDto.DisplayOrder,
+                            Name = singleWidgetResponseDto.Name,
+                            Type = singleWidgetResponseDto.Type,
+                            StatusCode = response.StatusCode,
+                            Errors = index == 0 ? response.Errors : null
+                        });
+                    }
+
+                    index++;
+                }
+            }
+
+            foreach (var grp in groups)
+            {
+                var widgetsInGroup = grp.Value.OrderBy(x => x.DisplayOrder).ToArray();
+
+                result.Add(new WidgetUnitResponse
+                {
+                    Name = grp.Key,
+                    DisplayOrder = widgetsInGroup.FirstOrDefault()?.DisplayOrder ?? 0,
+                    Type = "WidgetGroup",
+                    Widgets = widgetsInGroup
+                });
+            }
+
+            return result.OrderBy(x => x.DisplayOrder);
         }
     }
 }

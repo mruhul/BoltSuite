@@ -59,6 +59,29 @@ namespace Bolt.RequestBus.Widgets.Tests
             rsp.Widgets.ShouldContain(x => x.Name == "latest-editorials" && x.DisplayOrder == 1);
         }
 
+        [Fact]
+        public void Should_Return_All_Widgets_Including_Groups()
+        {
+            var sut = IocHelper.GetRequestBus(sc =>
+            {
+                sc.AddTransient<IResponseHandler<TestRequest, WidgetResponse>, MainTestWidget>();
+                sc.AddTransient<IResponseHandler<TestRequest, WidgetResponse>, TestWidget3Rd>();
+                sc.AddTransient<IResponseHandler<TestRequest, WidgetResponse>, TestWidget2Nd>();
+                sc.AddTransient<IResponseHandler<TestRequest, WidgetResponse>, TestWidgetGroup5Th>();
+                sc.AddTransient<IResponseHandler<TestRequest, WidgetResponse>, TestWidgetGroup4Th>();
+            });
+
+            var rsp = sut.WidgetResponse(new TestRequest());
+
+            rsp.StatusCode.ShouldBe(200);
+            rsp.RedirectAction.ShouldBeNull();
+            rsp.Widgets.ShouldContain(x => x.Name == "main" && x.DisplayOrder == 0);
+            rsp.Widgets.ShouldContain(x => x.Name == "recently-viewed" && x.DisplayOrder == 2);
+            rsp.Widgets.ShouldContain(x => x.Name == "latest-editorials" && x.DisplayOrder == 1);
+            rsp.Widgets.ShouldContain(x => x.Name == "docked" && x.DisplayOrder == 4);
+            rsp.Widgets.First(x => x.Name == "docked").Widgets.Length.ShouldBe(2);
+        }
+
         class MainTestWidget : WidgetResponseHandler<TestRequest>
         {
             public override Response<WidgetResponse> Handle(IRequestBusContext context, TestRequest request)
@@ -126,6 +149,48 @@ namespace Bolt.RequestBus.Widgets.Tests
         public class TestRequest
         {
             public string Name { get; set; }
+        }
+
+        class TestWidgetGroup4Th : WidgetResponseHandler<TestRequest>
+        {
+            public override Response<WidgetResponse> Handle(IRequestBusContext context, TestRequest request)
+            {
+                return WidgetBuilder
+                    .WithName("back")
+                    .WithGroup("docked")
+                    .WithType("cta")
+                    .WithDisplayOrder(4)
+                    .Build(new[]
+                    {
+                        new
+                        {
+                            Id = 1,
+                            Heading = "This is title1",
+                            PhotoUrl = "http://resource.static.com/200x160"
+                        }
+                    });
+            }
+        }
+
+        class TestWidgetGroup5Th : WidgetResponseHandler<TestRequest>
+        {
+            public override Response<WidgetResponse> Handle(IRequestBusContext context, TestRequest request)
+            {
+                return WidgetBuilder
+                    .WithName("back")
+                    .WithGroup("docked")
+                    .WithType("timer")
+                    .WithDisplayOrder(5)
+                    .Build(new[]
+                    {
+                        new
+                        {
+                            Id = 1,
+                            Heading = "This is title1",
+                            PhotoUrl = "http://resource.static.com/200x160"
+                        }
+                    });
+            }
         }
     }
 }
