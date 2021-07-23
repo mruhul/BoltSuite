@@ -27,7 +27,11 @@ namespace Bolt.RequestBus.Widgets
         IWidgetBuilderHaveType WithType(string type);
     }
 
-    public interface IWidgetBuilderHaveType : IWidgetBuilderBuildWithData, IWidgetBuilderCollectData, IWidgetBuilderCollectDisplayOrder
+    public interface IWidgetBuilderHaveType : 
+        IWidgetBuilderBuildWithData, 
+        IWidgetBuilderCollectData, 
+        IWidgetBuilderCollectDisplayOrder,
+        IWidgetBuilderCollectMetaData
     {
 
     }
@@ -62,6 +66,20 @@ namespace Bolt.RequestBus.Widgets
     {
         IWidgetBuilderHaveName AnotherWithName(string name);
     }
+
+    public interface IWidgetBuilderCollectMetaData
+    {
+        IWidgetBuilderHaveMetaData WithMetaData(Dictionary<string, object> data);
+        IWidgetBuilderHaveMetaData WithMetaData(string key, object value);
+    }
+
+    public interface IWidgetBuilderHaveMetaData : 
+        IWidgetBuilderBuildWithData,
+        IWidgetBuilderCollectData,
+        IWidgetBuilderCollectDisplayOrder,
+        IWidgetBuilderCollectMetaData
+    {
+    }
     
 
     public interface IWidgetBuilderBuildWithData
@@ -69,14 +87,19 @@ namespace Bolt.RequestBus.Widgets
         WidgetResponse Build(object data);
     }
 
-    public sealed class WidgetBuilder : IWidgetBuilderHaveName, IWidgetBuilderHaveType, IWidgetBuilderHaveDisplayOrder, IWidgetBuilderHaveGroupName,
-        IWidgetBuilderHaveData
+    public sealed class WidgetBuilder : IWidgetBuilderHaveName, 
+        IWidgetBuilderHaveType, 
+        IWidgetBuilderHaveDisplayOrder, 
+        IWidgetBuilderHaveGroupName,
+        IWidgetBuilderHaveData,
+        IWidgetBuilderHaveMetaData
     {
         private string _name;
         private string _type;
         private string _group;
         private int _displayOrder;
         private object _data;
+        private Dictionary<string, object> _metaData;
         private List<SingleWidgetResponseDto> _widgets;
 
         private WidgetBuilder(string name) => _name = name;
@@ -183,16 +206,41 @@ namespace Bolt.RequestBus.Widgets
                 Type = _type,
                 Group = _group,
                 Name = _name,
-                DisplayOrder = _displayOrder
+                DisplayOrder = _displayOrder,
+                MetaData = _metaData
             });
 
             _group = null;
             _data = null;
             _name = null;
             _type = null;
+            _metaData = null;
             _displayOrder = 0;
 
             _name = name;
+            return this;
+        }
+
+        public IWidgetBuilderHaveMetaData WithMetaData(Dictionary<string, object> data)
+        {
+            if (data == null) return this;
+
+            if (_metaData == null) _metaData = new Dictionary<string, object>();
+
+            foreach(var item in data)
+            {
+                _metaData[item.Key] = data;
+            }
+
+            return this;
+        }
+
+        public IWidgetBuilderHaveMetaData WithMetaData(string key, object value)
+        {
+            if (_metaData == null) _metaData = new Dictionary<string, object>();
+
+            _metaData[key] = value;
+
             return this;
         }
     }
