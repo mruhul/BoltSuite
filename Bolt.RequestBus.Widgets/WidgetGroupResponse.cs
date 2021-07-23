@@ -11,6 +11,7 @@ namespace Bolt.RequestBus.Widgets
         public IEnumerable<Error> Errors { get; init; } = Enumerable.Empty<Error>();
         public RedirectAction RedirectAction { get; init; }
         public IEnumerable<WidgetUnitResponse> Widgets { get; init; } = Enumerable.Empty<WidgetUnitResponse>();
+        public Dictionary<string, object> MetaData { get; init; } = new Dictionary<string, object>();
     }
 
     public sealed record WidgetUnitResponse
