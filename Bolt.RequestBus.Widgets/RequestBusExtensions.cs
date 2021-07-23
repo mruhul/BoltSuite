@@ -29,24 +29,30 @@ namespace Bolt.RequestBus.Widgets
             {
                 if (!mainRsp.IsSucceed)
                 {
+                    var convertRspMain = Convert(new[] { mainRsp });
+
                     return new WidgetGroupResponse
                     {
                         Errors = mainRsp.Errors,
                         StatusCode = mainRsp.StatusCode ?? 400,
                         StatusReason = mainRsp.StatusReason,
-                        Widgets = Convert(new []{mainRsp}),
-                        RedirectAction = mainRsp.Value?.RedirectAction
+                        Widgets = convertRspMain.Widgets,
+                        RedirectAction = mainRsp.Value?.RedirectAction,
+                        MetaData = convertRspMain.MetaData
                     };
                 }
 
                 if (!string.IsNullOrWhiteSpace(mainRsp.Value?.RedirectAction?.Url))
                 {
+                    var convertRspRedirect = Convert(new[] { mainRsp });
+
                     return new WidgetGroupResponse
                     {
                         RedirectAction = mainRsp.Value.RedirectAction,
                         StatusCode = mainRsp.StatusCode ?? 302,
                         StatusReason = mainRsp.StatusReason,
-                        Widgets = Convert(new[] { mainRsp })
+                        Widgets = convertRspRedirect.Widgets,
+                        MetaData = convertRspRedirect.MetaData
                     };
                 }
                 
@@ -57,10 +63,13 @@ namespace Bolt.RequestBus.Widgets
 
             units.AddRange(otherRsp);
 
+            var convertRsp = Convert(units);
+
             return new WidgetGroupResponse
             {
                 StatusCode = mainRsp?.StatusCode ?? 200,
-                Widgets = Convert(units)
+                Widgets = convertRsp.Widgets,
+                MetaData = convertRsp.MetaData
             };
         }
 
@@ -90,10 +99,12 @@ namespace Bolt.RequestBus.Widgets
             }
         }
 
-        private static IEnumerable<WidgetUnitResponse> Convert(IEnumerable<Response<WidgetResponse>> responses)
+        private static (IEnumerable<WidgetUnitResponse> Widgets, Dictionary<string,object> MetaData) Convert(IEnumerable<Response<WidgetResponse>> responses)
         {
+            var metaData = new Dictionary<string, object>();
+
             if (responses == null) 
-                return Enumerable.Empty<WidgetUnitResponse>();
+                return (Enumerable.Empty<WidgetUnitResponse>(), metaData);
 
             var result = new List<WidgetUnitResponse>();
             var groups = new Dictionary<string, List<WidgetUnitResponse>>();
@@ -138,6 +149,8 @@ namespace Bolt.RequestBus.Widgets
                         });
                     }
 
+                    AppendMetaData(metaData, singleWidgetResponseDto);
+
                     index++;
                 }
             }
@@ -155,7 +168,17 @@ namespace Bolt.RequestBus.Widgets
                 });
             }
 
-            return result.OrderBy(x => x.DisplayOrder);
+            return (result.OrderBy(x => x.DisplayOrder), metaData);
+        }
+
+        private static void AppendMetaData(Dictionary<string,object> metaData, SingleWidgetResponseDto rsp)
+        {
+            if (rsp.MetaData == null) return;
+
+            foreach(var item in rsp.MetaData)
+            {
+                metaData[item.Key] = item.Value;
+            }
         }
     }
 }
