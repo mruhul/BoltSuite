@@ -7,7 +7,17 @@ namespace Bolt.RequestBus.Widgets
         IWidgetBuilderHaveName WithName(string name);
     }
 
-    public interface IWidgetBuilderHaveName : IWidgetBuilderCollectType
+    public interface IWidgetBuilderHaveName : IWidgetBuilderCollectType, IWidgetBuilderCollectGroupName
+    {
+
+    }
+
+    public interface IWidgetBuilderCollectGroupName
+    {
+        IWidgetBuilderHaveGroupName WithGroup(string groupName);
+    }
+
+    public interface IWidgetBuilderHaveGroupName : IWidgetBuilderCollectType
     {
 
     }
@@ -17,7 +27,7 @@ namespace Bolt.RequestBus.Widgets
         IWidgetBuilderHaveType WithType(string type);
     }
 
-    public interface IWidgetBuilderHaveType : IWidgetBuilderBuild, IWidgetBuilderCollectDisplayOrder
+    public interface IWidgetBuilderHaveType : IWidgetBuilderBuildWithData, IWidgetBuilderCollectData, IWidgetBuilderCollectDisplayOrder
     {
 
     }
@@ -27,21 +37,47 @@ namespace Bolt.RequestBus.Widgets
         IWidgetBuilderHaveDisplayOrder WithDisplayOrder(int displayOrder);
     }
 
-    public interface IWidgetBuilderHaveDisplayOrder : IWidgetBuilderBuild
+    public interface IWidgetBuilderHaveDisplayOrder : IWidgetBuilderBuildWithData, IWidgetBuilderCollectData
+    {
+
+    }
+
+    public interface IWidgetBuilderCollectData
+    {
+        IWidgetBuilderHaveData WithData(object data);
+    }
+
+    public interface IWidgetBuilderHaveData : IWidgetBuilderBuild, IWidgetBuilderCollectWidgets
     {
 
     }
 
     public interface IWidgetBuilderBuild
     {
+        WidgetResponse Build();
+    }
+
+
+    public interface IWidgetBuilderCollectWidgets
+    {
+        IWidgetBuilderHaveName AnotherWithName(string name);
+    }
+    
+
+    public interface IWidgetBuilderBuildWithData
+    {
         WidgetResponse Build(object data);
     }
 
-    public sealed class WidgetBuilder : IWidgetBuilderHaveName, IWidgetBuilderHaveType, IWidgetBuilderHaveDisplayOrder
+    public sealed class WidgetBuilder : IWidgetBuilderHaveName, IWidgetBuilderHaveType, IWidgetBuilderHaveDisplayOrder, IWidgetBuilderHaveGroupName,
+        IWidgetBuilderHaveData
     {
-        private readonly string _name;
+        private string _name;
         private string _type;
+        private string _group;
         private int _displayOrder;
+        private object _data;
+        private List<SingleWidgetResponseDto> _widgets;
 
         private WidgetBuilder(string name) => _name = name;
 
@@ -54,6 +90,12 @@ namespace Bolt.RequestBus.Widgets
         public IWidgetBuilderHaveType WithType(string type)
         {
             _type = type;
+            return this;
+        }
+
+        public IWidgetBuilderHaveGroupName WithGroup(string groupName)
+        {
+            _group = groupName;
             return this;
         }
 
@@ -92,16 +134,66 @@ namespace Bolt.RequestBus.Widgets
 
         public WidgetResponse Build(object data)
         {
+            return WithData(data).Build();
+        }
+
+        public IWidgetBuilderHaveData WithData(object data)
+        {
+            _data = data;
+            return this;
+        }
+
+        public WidgetResponse Build()
+        {
+            var widget = new SingleWidgetResponseDto
+            {
+                Data = _data,
+                Type = _type,
+                Group = _group,
+                Name = _name,
+                DisplayOrder = _displayOrder
+            };
+
+            if (_widgets == null)
+            {
+                return new()
+                {
+                    Widgets = new[]
+                    {
+                        widget
+                    }
+                };
+            }
+
+            _widgets.Add(widget);
+
             return new()
             {
-                Widgets = new[] {new SingleWidgetResponseDto
-                {
-                    Data = data,
-                    Type = _type,
-                    Name = _name,
-                    DisplayOrder = _displayOrder
-                }}
+                Widgets = _widgets
             };
+        }
+
+        public IWidgetBuilderHaveName AnotherWithName(string name)
+        {
+            _widgets ??= new List<SingleWidgetResponseDto>();
+
+            _widgets.Add(new SingleWidgetResponseDto
+            {
+                Data = _data,
+                Type = _type,
+                Group = _group,
+                Name = _name,
+                DisplayOrder = _displayOrder
+            });
+
+            _group = null;
+            _data = null;
+            _name = null;
+            _type = null;
+            _displayOrder = 0;
+
+            _name = name;
+            return this;
         }
     }
 

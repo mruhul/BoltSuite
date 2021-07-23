@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,5 +21,6 @@ namespace Bolt.RequestBus.Widgets
         public string Type { get; init; }
         public object Data { get; init; }
         public int DisplayOrder { get; init; }
+        public WidgetUnitResponse[] Widgets { get; init; }
     }
 }
