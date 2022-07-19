@@ -28,8 +28,8 @@ namespace Bolt.RequestBus.Widgets
             if (mainRsp != null)
             {
                 if (!mainRsp.IsSucceed)
-                {
-                    var convertRspMain = Convert(new[] { mainRsp });
+                {   
+                    var convertRspMain = Convert(rsp.OtherResponses().Prepend(mainRsp));
 
                     return new WidgetGroupResponse
                     {
