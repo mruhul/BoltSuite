@@ -119,6 +119,8 @@ namespace Bolt.RequestBus.Widgets
 
                 foreach (var singleWidgetResponseDto in response.Value.Widgets)
                 {
+                    if (singleWidgetResponseDto == null) continue;
+                    
                     if (string.IsNullOrWhiteSpace(singleWidgetResponseDto.Group) is false)
                     {
                         if (groups.ContainsKey(singleWidgetResponseDto.Group) is false)
